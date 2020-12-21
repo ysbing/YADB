@@ -1,6 +1,5 @@
 package com.ysbing.yadb;
 
-import android.os.Build;
 import android.os.SystemClock;
 import android.view.InputDevice;
 import android.view.KeyEvent;
@@ -24,15 +23,10 @@ public class Server {
                         boolean ok = device.setClipboardText(args[1]
                                 .replace(FLAG_ENTER, "\n").replace(FLAG_SPACE, " "));
                         System.out.println("Copy text:" + ok);
-                        // On Android >= 7, also press the PASTE key if requested
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                            device.injectKeycode(KeyEvent.KEYCODE_PASTE);
-                        } else {
-                            device.injectKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_CTRL_LEFT, 0, KeyEvent.META_CTRL_ON | KeyEvent.META_CTRL_LEFT_ON);
-                            device.injectKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_V, 0, KeyEvent.META_CTRL_ON | KeyEvent.META_CTRL_LEFT_ON);
-                            device.injectKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_V, 0, KeyEvent.META_CTRL_ON | KeyEvent.META_CTRL_LEFT_ON);
-                            device.injectKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_CTRL_LEFT, 0, KeyEvent.META_NUM_LOCK_ON);
-                        }
+                        device.injectKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_CTRL_LEFT, 0, KeyEvent.META_CTRL_ON | KeyEvent.META_CTRL_LEFT_ON);
+                        device.injectKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_V, 0, KeyEvent.META_CTRL_ON | KeyEvent.META_CTRL_LEFT_ON);
+                        device.injectKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_V, 0, KeyEvent.META_CTRL_ON | KeyEvent.META_CTRL_LEFT_ON);
+                        device.injectKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_CTRL_LEFT, 0, KeyEvent.META_NUM_LOCK_ON);
                         break;
                     case ARG_TOUCH:
                         long downTime = SystemClock.uptimeMillis();
