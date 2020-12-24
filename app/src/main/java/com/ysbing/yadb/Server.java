@@ -10,6 +10,7 @@ import java.util.Arrays;
 public class Server {
     private static final String ARG_KEY_BOARD = "-keyboard";
     private static final String ARG_TOUCH = "-touch";
+    private static final String ARG_LAYOUT = "-layout";
     private static final String FLAG_SPACE = "~SPACE~";
     private static final String FLAG_ENTER = "~ENTER~";
     private static final String FLAG_CLEAR = "~CLEAR~";
@@ -68,6 +69,9 @@ public class Server {
                                 1, 1f, 1f, -1, 0, InputDevice.SOURCE_TOUCHSCREEN, 0);
                         device.injectEvent(click_event2);
                         break;
+                    case ARG_LAYOUT:
+                        RootWindowShell.get();
+                        break;
                     default:
                         break;
                 }
@@ -80,6 +84,6 @@ public class Server {
     }
 
     private static boolean check(String arg) {
-        return arg.equals(ARG_KEY_BOARD) || arg.equals(ARG_TOUCH);
+        return arg.equals(ARG_KEY_BOARD) || arg.equals(ARG_TOUCH) || arg.equals(ARG_LAYOUT);
     }
 }
