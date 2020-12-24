@@ -12,6 +12,7 @@ public class Server {
     private static final String ARG_TOUCH = "-touch";
     private static final String FLAG_SPACE = "~SPACE~";
     private static final String FLAG_ENTER = "~ENTER~";
+    private static final String FLAG_CLEAR = "~CLEAR~";
 
     public static void main(String[] args) {
         try {
@@ -20,13 +21,24 @@ public class Server {
                 Device device = new Device();
                 switch (args[0]) {
                     case ARG_KEY_BOARD:
-                        boolean ok = device.setClipboardText(args[1]
-                                .replace(FLAG_ENTER, "\n").replace(FLAG_SPACE, " "));
-                        System.out.println("Copy text:" + ok);
-                        device.injectKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_CTRL_LEFT, 0, KeyEvent.META_CTRL_ON | KeyEvent.META_CTRL_LEFT_ON);
-                        device.injectKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_V, 0, KeyEvent.META_CTRL_ON | KeyEvent.META_CTRL_LEFT_ON);
-                        device.injectKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_V, 0, KeyEvent.META_CTRL_ON | KeyEvent.META_CTRL_LEFT_ON);
-                        device.injectKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_CTRL_LEFT, 0, KeyEvent.META_NUM_LOCK_ON);
+                        String text = args[1];
+                        boolean clearFlags = text.contains(FLAG_CLEAR);
+                        if (clearFlags) {
+                            device.injectKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_CTRL_LEFT, 0, KeyEvent.META_CTRL_ON | KeyEvent.META_CTRL_LEFT_ON);
+                            device.injectKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_A, 0, KeyEvent.META_CTRL_ON | KeyEvent.META_CTRL_LEFT_ON);
+                            device.injectKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_A, 0, KeyEvent.META_CTRL_ON | KeyEvent.META_CTRL_LEFT_ON);
+                            device.injectKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_CTRL_LEFT, 0, KeyEvent.META_NUM_LOCK_ON);
+                            device.injectKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL, 0, KeyEvent.META_CTRL_ON | KeyEvent.META_CTRL_LEFT_ON);
+                            device.injectKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DEL, 0, KeyEvent.META_CTRL_ON | KeyEvent.META_CTRL_LEFT_ON);
+                        } else {
+                            text = text.replace(FLAG_ENTER, "\n").replace(FLAG_SPACE, " ");
+                            boolean ok = device.setClipboardText(text);
+                            System.out.println("Copy text:" + ok);
+                            device.injectKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_CTRL_LEFT, 0, KeyEvent.META_CTRL_ON | KeyEvent.META_CTRL_LEFT_ON);
+                            device.injectKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_V, 0, KeyEvent.META_CTRL_ON | KeyEvent.META_CTRL_LEFT_ON);
+                            device.injectKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_V, 0, KeyEvent.META_CTRL_ON | KeyEvent.META_CTRL_LEFT_ON);
+                            device.injectKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_CTRL_LEFT, 0, KeyEvent.META_NUM_LOCK_ON);
+                        }
                         break;
                     case ARG_TOUCH:
                         long downTime = SystemClock.uptimeMillis();
