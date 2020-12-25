@@ -7,6 +7,7 @@ import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 
 import com.ysbing.yadb.wrappers.ClipboardManager;
+import com.ysbing.yadb.wrappers.DisplayManager;
 import com.ysbing.yadb.wrappers.InputManager;
 import com.ysbing.yadb.wrappers.ServiceManager;
 
@@ -70,4 +71,12 @@ public final class Device {
         return ok;
     }
 
+
+    public DisplayInfo getDisplayInfo() {
+        DisplayManager displayManager = serviceManager.getDisplayManager();
+        if (displayManager == null) {
+            return null;
+        }
+        return displayManager.getDisplayInfo();
+    }
 }
