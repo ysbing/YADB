@@ -15,6 +15,7 @@ public final class ServiceManager {
     private final Method getServiceMethod;
 
     private ClipboardManager clipboardManager;
+    private DisplayManager displayManager;
     private InputManager inputManager;
 
     public ServiceManager() {
@@ -47,6 +48,13 @@ public final class ServiceManager {
             clipboardManager = new ClipboardManager(clipboard);
         }
         return clipboardManager;
+    }
+
+    public DisplayManager getDisplayManager() {
+        if (displayManager == null) {
+            displayManager = new DisplayManager(getService("display", "android.hardware.display.IDisplayManager"));
+        }
+        return displayManager;
     }
 
     public InputManager getInputManager() {
