@@ -8,8 +8,6 @@ public final class DisplayInfo {
     private final int layerStack;
     private final int flags;
 
-    public static final int FLAG_SUPPORTS_PROTECTED_BUFFERS = 0x00000001;
-
     public DisplayInfo(Size size, int rotation, int layerStack, int flags) {
         this.size = size;
         this.rotation = rotation;

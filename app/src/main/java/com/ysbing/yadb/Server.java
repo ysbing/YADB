@@ -1,11 +1,25 @@
 package com.ysbing.yadb;
 
+import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
+import android.graphics.PixelFormat;
+import android.graphics.Rect;
+import android.media.Image;
+import android.media.ImageReader;
+import android.os.IBinder;
 import android.os.SystemClock;
+import android.util.Size;
 import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 
+import com.ysbing.yadb.wrappers.SurfaceControl;
 import com.ysbing.yadb.wrappers.layout.LayoutShell;
+
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.nio.ByteBuffer;
 
 public class Server {
 
@@ -13,6 +27,7 @@ public class Server {
     private static final String FLAG_ENTER = "~ENTER~";
     private static final String FLAG_CLEAR = "~CLEAR~";
     private static final String LAYOUT_DEFAULT_PATH = "/sdcard/yadb_layout_dump.xml";
+    private static final String SCREENSHOT_DEFAULT_PATH = "/sdcard/yadb_screenshot.png";
 
     private static final Device device = new Device();
 
@@ -78,5 +93,52 @@ public class Server {
     }
 
     public static void screenshot(String path) {
+        DisplayInfo displayInfo = device.getDisplayInfo();
+        if (displayInfo == null) {
+            return;
+        }
+        IBinder iBinder = SurfaceControl.createDisplay("yadb", true);
+        Size size = displayInfo.getSize();
+        Rect rect = new Rect(0, 0, size.getWidth(), size.getHeight());
+        @SuppressLint("WrongConstant")
+        ImageReader imageReader = ImageReader.newInstance(size.getWidth(), size.getHeight(), PixelFormat.RGBA_8888, 1);
+        SurfaceControl.openTransaction();
+        try {
+            SurfaceControl.setDisplaySurface(iBinder, imageReader.getSurface());
+            SurfaceControl.setDisplayProjection(iBinder, displayInfo.getRotation(), rect, rect);
+            SurfaceControl.setDisplayLayerStack(iBinder, displayInfo.getLayerStack());
+        } finally {
+            SurfaceControl.closeTransaction();
+        }
+        Image image = null;
+        while (image == null) {
+            image = imageReader.acquireLatestImage();
+        }
+        System.out.println("image:" + image);
+        Image.Plane[] planes = image.getPlanes();
+        ByteBuffer buffer = planes[0].getBuffer();
+        int width = image.getWidth();
+        int height = image.getHeight();
+        int pixelStride = planes[0].getPixelStride(), rowStride = planes[0].getRowStride(), rowPadding = rowStride - pixelStride * width;
+        Bitmap bitmap = Bitmap.createBitmap(width + rowPadding / pixelStride, height, Bitmap.Config.ARGB_8888);
+        bitmap.copyPixelsFromBuffer(buffer);
+        image.close();
+        File file;
+        if (path == null) {
+            file = new File(SCREENSHOT_DEFAULT_PATH);
+        } else {
+            file = new File(path);
+        }
+        try {
+            FileOutputStream fos = new FileOutputStream(file);
+            BufferedOutputStream bos = new BufferedOutputStream(fos);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
+            bos.flush();
+            bos.close();
+            fos.close();
+            System.out.println("screenshot success:" + file.getAbsolutePath());
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
     }
 }

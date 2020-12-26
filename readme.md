@@ -20,7 +20,7 @@ adb shell input text 你好
 
 于是，开发出来了，具体的使用如下：
 ```
-adb push yadb /data/local/tmp & adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Server -keyboard 你好，世界
+adb push yadb /data/local/tmp & adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -keyboard 你好，世界
 ```
 
 执行完再看下手机编辑框，是不是出现了中文，这个方案不用手动安装apk在手机上，应该是方便了许多
@@ -36,7 +36,7 @@ adb shell input swipe <x1> <y1> <x2> <y2> [duration(ms)]
 
 于是，开发出来了，具体的使用如下：
 ```
-adb push yadb /data/local/tmp & adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Server -touch 500 500 500 500 2000
+adb push yadb /data/local/tmp & adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -touch 500 500 500 500 2000
 ```
 
 ## 致谢
