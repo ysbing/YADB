@@ -1,7 +1,5 @@
 package com.ysbing.yadb;
 
-import java.util.Arrays;
-
 public class Main {
     private static final String ARG_KEY_BOARD = "-keyboard";
     private static final String ARG_TOUCH = "-touch";
@@ -10,7 +8,6 @@ public class Main {
 
     public static void main(String[] args) {
         try {
-            System.out.println("yadb:" + Arrays.toString(args));
             if (check(args[0])) {
                 switch (args[0]) {
                     case ARG_KEY_BOARD:

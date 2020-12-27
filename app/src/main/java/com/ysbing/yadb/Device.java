@@ -62,7 +62,7 @@ public final class Device {
             // Since pasting text from the computer involves setting the device clipboard, it could be set twice on a copy-paste. This would cause
             // the clipboard listeners to be notified twice, and that would flood the Android keyboard clipboard history. To workaround this
             // problem, do not explicitly set the clipboard text if it already contains the expected content.
-            return false;
+            return true;
         }
 
         isSettingClipboard.set(true);
