@@ -102,6 +102,7 @@ public class AccessibilityNodeInfoDumper {
             serializer.attribute("", "resource-id", safeCharSeqToString(node.getViewIdResourceName()));
         }
 
+        node.refresh();
         int count = node.getChildCount();
         for (int i = 0; i < count; i++) {
             AccessibilityNodeInfo child = node.getChild(i);

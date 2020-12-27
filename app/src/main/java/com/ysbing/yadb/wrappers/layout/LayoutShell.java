@@ -11,7 +11,7 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import com.ysbing.yadb.DisplayInfo;
 
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -24,22 +24,27 @@ public class LayoutShell {
     private UiAutomation mUiAutomation = null;
 
     public static void get(String path, DisplayInfo displayInfo) {
+        LayoutShell shell = new LayoutShell();
         try {
-            LayoutShell shell = new LayoutShell();
             shell.connect();
             AccessibilityNodeInfo info = null;
             while (info == null) {
                 info = shell.mUiAutomation.getRootInActiveWindow();
             }
             String content = AccessibilityNodeInfoDumper.getWindowXMLHierarchy(info, displayInfo);
-            shell.disconnect();
             File file = new File(path);
-            FileOutputStream fos = new FileOutputStream(file);
-            fos.write(content.getBytes());
-            fos.close();
+            FileWriter writer = new FileWriter(file);
+            writer.write(content);
+            writer.close();
             System.out.println("layout dumped to:" + file.getAbsolutePath());
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            try {
+                shell.disconnect();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

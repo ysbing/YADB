@@ -43,11 +43,11 @@ public class Server {
         } else {
             text = text.replace(FLAG_ENTER, "\n").replace(FLAG_SPACE, " ");
             boolean ok = device.setClipboardText(text);
-            System.out.println("Copy text:" + ok);
             device.injectKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_CTRL_LEFT, 0, KeyEvent.META_CTRL_ON | KeyEvent.META_CTRL_LEFT_ON);
             device.injectKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_V, 0, KeyEvent.META_CTRL_ON | KeyEvent.META_CTRL_LEFT_ON);
             device.injectKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_V, 0, KeyEvent.META_CTRL_ON | KeyEvent.META_CTRL_LEFT_ON);
             device.injectKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_CTRL_LEFT, 0, KeyEvent.META_NUM_LOCK_ON);
+            System.out.println("Copy text:" + ok);
         }
     }
 
@@ -136,6 +136,7 @@ public class Server {
             bos.flush();
             bos.close();
             fos.close();
+            bitmap.recycle();
             System.out.println("screenshot success:" + file.getAbsolutePath());
         } catch (Throwable e) {
             e.printStackTrace();
