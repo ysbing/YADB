@@ -1,4 +1,4 @@
-yadb是一个根据原生yadb不支持的功能做的扩展，现在已支持两个功能，分别是中文输入和长按屏幕。
+yadb是一个根据原生yadb不支持的功能做的扩展，现在已支持四个功能，分别是中文输入、长按屏幕、布局元素、截屏。
 
 根目录已经编译出yadb，可以直接使用，如果是windows系统可以直接执行windows.bat看看效果。
 
@@ -26,17 +26,20 @@ adb push yadb /data/local/tmp & adb shell app_process -Djava.class.path=/data/lo
 执行完再看下手机编辑框，是不是出现了中文，这个方案不用手动安装apk在手机上，应该是方便了许多
 
 ## 长按屏幕
-adb有一个类似的命令
 ```
-adb shell input swipe <x1> <y1> <x2> <y2> [duration(ms)]
+adb push yadb /data/local/tmp & adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -touch 500 500 2000
 ```
-这个命令是在两点间移动，两个点设置一样的话就是长按
 
-我尝试了一下，发现了一个问题，就是在编辑框长按没法弹出粘贴，后面查了一下，是因为长按的点不是同一个，没法触发出长按的效果
-
-于是，开发出来了，具体的使用如下：
+## 布局元素
+比adb shell uiautomator dump好用，uiautomator有些界面获取不到
 ```
-adb push yadb /data/local/tmp & adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -touch 500 500 500 500 2000
+adb push yadb /data/local/tmp & adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -layout
+```
+
+## 截屏
+可以无视Activity的禁止截屏
+```
+adb push yadb /data/local/tmp & adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -screenshot
 ```
 
 ## 致谢
