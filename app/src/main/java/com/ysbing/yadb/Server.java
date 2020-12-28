@@ -7,11 +7,13 @@ import android.graphics.Rect;
 import android.media.Image;
 import android.media.ImageReader;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.SystemClock;
 import android.util.Size;
 import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
+import android.view.Surface;
 
 import com.ysbing.yadb.wrappers.SurfaceControl;
 import com.ysbing.yadb.wrappers.layout.LayoutShell;
@@ -93,6 +95,7 @@ public class Server {
     }
 
     public static void screenshot(String path) {
+        Looper.prepareMainLooper();
         DisplayInfo displayInfo = device.getDisplayInfo();
         if (displayInfo == null) {
             return;
@@ -102,18 +105,19 @@ public class Server {
         Rect rect = new Rect(0, 0, size.getWidth(), size.getHeight());
         @SuppressLint("WrongConstant")
         ImageReader imageReader = ImageReader.newInstance(size.getWidth(), size.getHeight(), PixelFormat.RGBA_8888, 1);
+        Surface surface = imageReader.getSurface();
         SurfaceControl.openTransaction();
         try {
-            SurfaceControl.setDisplaySurface(iBinder, imageReader.getSurface());
+            SurfaceControl.setDisplaySurface(iBinder, surface);
             SurfaceControl.setDisplayProjection(iBinder, displayInfo.getRotation(), rect, rect);
             SurfaceControl.setDisplayLayerStack(iBinder, displayInfo.getLayerStack());
         } finally {
             SurfaceControl.closeTransaction();
         }
-        Image image = null;
-        while (image == null) {
+        Image image;
+        do {
             image = imageReader.acquireLatestImage();
-        }
+        } while (image == null);
         System.out.println("image:" + image);
         Image.Plane[] planes = image.getPlanes();
         ByteBuffer buffer = planes[0].getBuffer();
@@ -123,6 +127,8 @@ public class Server {
         Bitmap bitmap = Bitmap.createBitmap(width + rowPadding / pixelStride, height, Bitmap.Config.ARGB_8888);
         bitmap.copyPixelsFromBuffer(buffer);
         image.close();
+        SurfaceControl.destroyDisplay(iBinder);
+        surface.release();
         Bitmap resultBitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height);
         bitmap.recycle();
         File file;
