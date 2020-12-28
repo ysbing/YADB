@@ -123,6 +123,8 @@ public class Server {
         Bitmap bitmap = Bitmap.createBitmap(width + rowPadding / pixelStride, height, Bitmap.Config.ARGB_8888);
         bitmap.copyPixelsFromBuffer(buffer);
         image.close();
+        Bitmap resultBitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height);
+        bitmap.recycle();
         File file;
         if (path == null) {
             file = new File(SCREENSHOT_DEFAULT_PATH);
@@ -132,11 +134,11 @@ public class Server {
         try {
             FileOutputStream fos = new FileOutputStream(file);
             BufferedOutputStream bos = new BufferedOutputStream(fos);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
+            resultBitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
             bos.flush();
             bos.close();
             fos.close();
-            bitmap.recycle();
+            resultBitmap.recycle();
             System.out.println("screenshot success:" + file.getAbsolutePath());
         } catch (Throwable e) {
             e.printStackTrace();
