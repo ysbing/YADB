@@ -27,10 +27,10 @@ public class LayoutShell {
         LayoutShell shell = new LayoutShell();
         try {
             shell.connect();
-            AccessibilityNodeInfo info = null;
-            while (info == null) {
+            AccessibilityNodeInfo info;
+            do {
                 info = shell.mUiAutomation.getRootInActiveWindow();
-            }
+            } while (info == null);
             String content = AccessibilityNodeInfoDumper.getWindowXMLHierarchy(info, displayInfo);
             File file = new File(path);
             FileWriter writer = new FileWriter(file);
