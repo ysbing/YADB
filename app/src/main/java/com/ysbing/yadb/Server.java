@@ -29,6 +29,8 @@ public class Server {
     private static final String FLAG_SPACE = "~SPACE~";
     private static final String FLAG_ENTER = "~ENTER~";
     private static final String FLAG_CLEAR = "~CLEAR~";
+    private static final String FLAG_BRACES_LEFT = "~BRACES_LEFT~";
+    private static final String FLAG_BRACES_RIGHT = "~BRACES_RIGHT~";
     private static final String LAYOUT_DEFAULT_PATH = "/sdcard/yadb_layout_dump.xml";
     private static final String SCREENSHOT_DEFAULT_PATH = "/sdcard/yadb_screenshot.png";
 
@@ -44,7 +46,8 @@ public class Server {
             device.injectKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL, 0, KeyEvent.META_CTRL_ON | KeyEvent.META_CTRL_LEFT_ON);
             device.injectKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DEL, 0, KeyEvent.META_CTRL_ON | KeyEvent.META_CTRL_LEFT_ON);
         } else {
-            text = text.replace(FLAG_ENTER, "\n").replace(FLAG_SPACE, " ");
+            text = text.replace(FLAG_ENTER, "\n").replace(FLAG_SPACE, " ")
+                    .replace(FLAG_BRACES_LEFT, "(").replace(FLAG_BRACES_RIGHT, ")");
             boolean ok = device.setClipboardText(text);
             device.injectKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_CTRL_LEFT, 0, KeyEvent.META_CTRL_ON | KeyEvent.META_CTRL_LEFT_ON);
             device.injectKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_V, 0, KeyEvent.META_CTRL_ON | KeyEvent.META_CTRL_LEFT_ON);
