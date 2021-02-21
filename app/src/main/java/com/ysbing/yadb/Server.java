@@ -2,6 +2,7 @@ package com.ysbing.yadb;
 
 import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.media.Image;
@@ -103,8 +104,18 @@ public class Server {
         IBinder iBinder = SurfaceControl.createDisplay("yadb", true);
         Size size = displayInfo.getSize();
         Rect rect = new Rect(0, 0, size.getWidth(), size.getHeight());
+        int imageWidth, imageHeight;
+        int rotation = displayInfo.getRotation();
+        //横屏
+        if (rotation == 1 || rotation == 3) {
+            imageWidth = size.getHeight();
+            imageHeight = size.getWidth();
+        } else {
+            imageWidth = size.getWidth();
+            imageHeight = size.getHeight();
+        }
         @SuppressLint("WrongConstant")
-        ImageReader imageReader = ImageReader.newInstance(size.getWidth(), size.getHeight(), PixelFormat.RGBA_8888, 1);
+        ImageReader imageReader = ImageReader.newInstance(imageWidth, imageHeight, PixelFormat.RGBA_8888, 1);
         Surface surface = imageReader.getSurface();
         SurfaceControl.openTransaction();
         try {
@@ -118,18 +129,35 @@ public class Server {
         do {
             image = imageReader.acquireLatestImage();
         } while (image == null);
-        System.out.println("image:" + image);
         Image.Plane[] planes = image.getPlanes();
         ByteBuffer buffer = planes[0].getBuffer();
         int width = image.getWidth();
         int height = image.getHeight();
+        System.out.println("image:" + image + ",width:" + width + ",height:" + height + ",rotation:" + rotation);
+        Matrix matrix = new Matrix();
+        switch (rotation) {
+            case 0:
+                matrix.postRotate(0);
+                break;
+            case 1:
+                matrix.postRotate(270);
+                break;
+            case 2:
+                matrix.postRotate(180);
+                break;
+            case 3:
+                matrix.postRotate(90);
+                break;
+            default:
+                break;
+        }
         int pixelStride = planes[0].getPixelStride(), rowStride = planes[0].getRowStride(), rowPadding = rowStride - pixelStride * width;
         Bitmap bitmap = Bitmap.createBitmap(width + rowPadding / pixelStride, height, Bitmap.Config.ARGB_8888);
         bitmap.copyPixelsFromBuffer(buffer);
         image.close();
         SurfaceControl.destroyDisplay(iBinder);
         surface.release();
-        Bitmap resultBitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height);
+        Bitmap resultBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
         bitmap.recycle();
         File file;
         if (path == null) {
