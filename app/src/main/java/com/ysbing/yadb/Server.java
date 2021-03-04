@@ -160,7 +160,7 @@ public class Server {
         image.close();
         SurfaceControl.destroyDisplay(iBinder);
         surface.release();
-        Bitmap resultBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+        Bitmap resultBitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true);
         bitmap.recycle();
         File file;
         if (path == null) {
