@@ -23,6 +23,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
+import java.util.concurrent.TimeoutException;
 
 public class Server {
 
@@ -57,7 +58,7 @@ public class Server {
         }
     }
 
-    public static void touch(float x, float y, long pressedTime) {
+    public static void touch(float x, float y, long pressedTime) throws Exception {
         long downTime = SystemClock.uptimeMillis();
         MotionEvent.PointerProperties[] properties = new MotionEvent.PointerProperties[1];
         properties[0] = new MotionEvent.PointerProperties();
@@ -73,11 +74,7 @@ public class Server {
                 0, 1f, 1f, -1, 0, InputDevice.SOURCE_TOUCHSCREEN, 0);
         device.injectEvent(clickEvent);
         if (pressedTime >= 0L) {
-            try {
-                Thread.sleep(pressedTime);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            Thread.sleep(pressedTime);
         }
         coords[0].pressure = 0;
         MotionEvent clickEvent2 = MotionEvent.obtain(downTime, SystemClock.uptimeMillis(),
@@ -86,7 +83,7 @@ public class Server {
         device.injectEvent(clickEvent2);
     }
 
-    public static void layout(String path) {
+    public static void layout(String path) throws Exception {
         DisplayInfo displayInfo = device.getDisplayInfo();
         if (displayInfo == null) {
             return;
@@ -98,7 +95,7 @@ public class Server {
         }
     }
 
-    public static void screenshot(String path) {
+    public static void screenshot(String path) throws Exception {
         Looper.prepareMainLooper();
         DisplayInfo displayInfo = device.getDisplayInfo();
         if (displayInfo == null) {
@@ -129,7 +126,11 @@ public class Server {
             SurfaceControl.closeTransaction();
         }
         Image image;
+        long startTime = System.currentTimeMillis();
         do {
+            if (System.currentTimeMillis() - startTime >= 5000) {
+                throw new TimeoutException();
+            }
             image = imageReader.acquireLatestImage();
         } while (image == null);
         Image.Plane[] planes = image.getPlanes();
@@ -168,17 +169,13 @@ public class Server {
         } else {
             file = new File(path);
         }
-        try {
-            FileOutputStream fos = new FileOutputStream(file);
-            BufferedOutputStream bos = new BufferedOutputStream(fos);
-            resultBitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
-            bos.flush();
-            bos.close();
-            fos.close();
-            resultBitmap.recycle();
-            System.out.println("screenshot success:" + file.getAbsolutePath());
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
+        FileOutputStream fos = new FileOutputStream(file);
+        BufferedOutputStream bos = new BufferedOutputStream(fos);
+        resultBitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
+        bos.flush();
+        bos.close();
+        fos.close();
+        resultBitmap.recycle();
+        System.out.println("screenshot success:" + file.getAbsolutePath());
     }
 }
