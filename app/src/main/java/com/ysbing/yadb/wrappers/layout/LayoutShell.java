@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.concurrent.TimeoutException;
 
 @SuppressLint("SoonBlockedPrivateApi")
 public class LayoutShell {
@@ -23,12 +24,16 @@ public class LayoutShell {
     private Method mDisconnectMethod = null;
     private UiAutomation mUiAutomation = null;
 
-    public static void get(String path, DisplayInfo displayInfo) {
+    public static void get(String path, DisplayInfo displayInfo) throws Exception {
         LayoutShell shell = new LayoutShell();
         try {
             shell.connect();
             AccessibilityNodeInfo info;
+            long startTime = System.currentTimeMillis();
             do {
+                if (System.currentTimeMillis() - startTime >= 5000) {
+                    throw new TimeoutException();
+                }
                 info = shell.mUiAutomation.getRootInActiveWindow();
             } while (info == null);
             String content = AccessibilityNodeInfoDumper.getWindowXMLHierarchy(info, displayInfo);
@@ -37,8 +42,6 @@ public class LayoutShell {
             writer.write(content);
             writer.close();
             System.out.println("layout dumped to:" + file.getAbsolutePath());
-        } catch (Exception e) {
-            e.printStackTrace();
         } finally {
             try {
                 shell.disconnect();
