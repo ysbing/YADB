@@ -7,6 +7,7 @@ import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.media.Image;
 import android.media.ImageReader;
+import android.os.Build;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.SystemClock;
@@ -101,7 +102,9 @@ public class Server {
         if (displayInfo == null) {
             return;
         }
-        IBinder iBinder = SurfaceControl.createDisplay("yadb", true);
+        boolean secure = Build.VERSION.SDK_INT < Build.VERSION_CODES.R
+                || (Build.VERSION.SDK_INT == Build.VERSION_CODES.R && !"S".equals(Build.VERSION.CODENAME));
+        IBinder iBinder = SurfaceControl.createDisplay("yadb", secure);
         Size size = displayInfo.getSize();
         Rect rect = new Rect(0, 0, size.getWidth(), size.getHeight());
         int imageWidth, imageHeight;
