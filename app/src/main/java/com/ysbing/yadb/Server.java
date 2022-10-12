@@ -8,6 +8,7 @@ import android.graphics.Rect;
 import android.media.Image;
 import android.media.ImageReader;
 import android.os.Build;
+import android.os.Environment;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.SystemClock;
@@ -28,13 +29,10 @@ import java.util.concurrent.TimeoutException;
 
 public class Server {
 
-    private static final String FLAG_SPACE = "~SPACE~";
     private static final String FLAG_ENTER = "~ENTER~";
     private static final String FLAG_CLEAR = "~CLEAR~";
-    private static final String FLAG_BRACES_LEFT = "~BRACES_LEFT~";
-    private static final String FLAG_BRACES_RIGHT = "~BRACES_RIGHT~";
-    private static final String LAYOUT_DEFAULT_PATH = "/sdcard/yadb_layout_dump.xml";
-    private static final String SCREENSHOT_DEFAULT_PATH = "/sdcard/yadb_screenshot.png";
+    private static final File LAYOUT_DEFAULT_FILE = new File(Environment.getExternalStorageDirectory(), "yadb_layout_dump.xml");
+    private static final File SCREENSHOT_DEFAULT_FILE = new File(Environment.getExternalStorageDirectory(), "yadb_screenshot.png");
 
     private static final Device device = new Device();
 
@@ -48,8 +46,7 @@ public class Server {
             device.injectKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL, 0, KeyEvent.META_CTRL_ON | KeyEvent.META_CTRL_LEFT_ON);
             device.injectKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DEL, 0, KeyEvent.META_CTRL_ON | KeyEvent.META_CTRL_LEFT_ON);
         } else {
-            text = text.replace(FLAG_ENTER, "\n").replace(FLAG_SPACE, " ")
-                    .replace(FLAG_BRACES_LEFT, "(").replace(FLAG_BRACES_RIGHT, ")");
+            text = text.replace(FLAG_ENTER, "\n");
             boolean ok = device.setClipboardText(text);
             device.injectKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_CTRL_LEFT, 0, KeyEvent.META_CTRL_ON | KeyEvent.META_CTRL_LEFT_ON);
             device.injectKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_V, 0, KeyEvent.META_CTRL_ON | KeyEvent.META_CTRL_LEFT_ON);
@@ -90,9 +87,9 @@ public class Server {
             return;
         }
         if (path == null) {
-            LayoutShell.get(LAYOUT_DEFAULT_PATH, displayInfo);
+            LayoutShell.get(LAYOUT_DEFAULT_FILE, displayInfo);
         } else {
-            LayoutShell.get(path, displayInfo);
+            LayoutShell.get(new File(path), displayInfo);
         }
     }
 
@@ -168,7 +165,7 @@ public class Server {
         bitmap.recycle();
         File file;
         if (path == null) {
-            file = new File(SCREENSHOT_DEFAULT_PATH);
+            file = SCREENSHOT_DEFAULT_FILE;
         } else {
             file = new File(path);
         }
