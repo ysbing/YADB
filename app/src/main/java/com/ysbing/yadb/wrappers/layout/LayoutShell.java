@@ -24,7 +24,7 @@ public class LayoutShell {
     private Method mDisconnectMethod = null;
     private UiAutomation mUiAutomation = null;
 
-    public static void get(String path, DisplayInfo displayInfo) throws Exception {
+    public static void get(File file, DisplayInfo displayInfo) throws Exception {
         LayoutShell shell = new LayoutShell();
         try {
             shell.connect();
@@ -37,7 +37,6 @@ public class LayoutShell {
                 info = shell.mUiAutomation.getRootInActiveWindow();
             } while (info == null);
             String content = AccessibilityNodeInfoDumper.getWindowXMLHierarchy(info, displayInfo);
-            File file = new File(path);
             FileWriter writer = new FileWriter(file);
             writer.write(content);
             writer.close();
