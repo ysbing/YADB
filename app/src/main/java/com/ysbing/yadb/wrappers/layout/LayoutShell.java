@@ -10,6 +10,21 @@ import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.ysbing.yadb.DisplayInfo;
 
+import org.xml.sax.InputSource;
+import java.io.ByteArrayInputStream; 
+import java.io.ByteArrayOutputStream; 
+import javax.xml.transform.Source;
+import javax.xml.transform.sax.SAXSource;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Result;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.sax.SAXTransformerFactory;
+import javax.xml.transform.sax.TransformerHandler;
+import javax.xml.transform.stream.StreamResult;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.lang.reflect.InvocationTargetException;
@@ -38,7 +53,7 @@ public class LayoutShell {
             } while (info == null);
             String content = AccessibilityNodeInfoDumper.getWindowXMLHierarchy(info, displayInfo);
             FileWriter writer = new FileWriter(file);
-            writer.write(content);
+            writer.write(formatXml(content));
             writer.close();
             System.out.println("layout dumped to:" + file.getAbsolutePath());
         } finally {
@@ -49,7 +64,21 @@ public class LayoutShell {
             }
         }
     }
-
+    
+    private static String formatXml(String xml) {
+        try {
+            Transformer serializer = SAXTransformerFactory.newInstance().newTransformer();
+            serializer.setOutputProperty(OutputKeys.INDENT, "yes");
+            serializer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+            Source xmlSource = new SAXSource(new InputSource(new ByteArrayInputStream(xml.getBytes())));
+            StreamResult res = new StreamResult(new ByteArrayOutputStream());
+            serializer.transform(xmlSource, res);
+            return new String(((ByteArrayOutputStream) res.getOutputStream()).toByteArray());
+        } catch (Exception e) {
+            return xml;
+        }
+    }
+    
     public void connect() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
         if (mHandlerThread.isAlive()) {
             throw new IllegalStateException("Already connected!");
