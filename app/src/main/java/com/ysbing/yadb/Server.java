@@ -31,8 +31,8 @@ public class Server {
 
     private static final String FLAG_ENTER = "~ENTER~";
     private static final String FLAG_CLEAR = "~CLEAR~";
-    private static final File LAYOUT_DEFAULT_FILE = new File(Environment.getExternalStorageDirectory(), "yadb_layout_dump.xml");
-    private static final File SCREENSHOT_DEFAULT_FILE = new File(Environment.getExternalStorageDirectory(), "yadb_screenshot.png");
+    private static final File LAYOUT_DEFAULT_FILE = new File("/data/local/tmp", "yadb_layout_dump.xml");
+    private static final File SCREENSHOT_DEFAULT_FILE = new File("/data/local/tmp", "yadb_screenshot.png");
 
     private static final Device device = new Device();
 
