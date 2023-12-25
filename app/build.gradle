@@ -1,12 +1,13 @@
 apply plugin: 'com.android.application'
+apply plugin: 'YRouter-system'
 
 android {
-    compileSdkVersion 32
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.ysbing.yadb"
-        minSdkVersion 21
-        targetSdkVersion 32
+        minSdk 21
+        targetSdk 34
         versionCode 1
         versionName "1.0"
     }
