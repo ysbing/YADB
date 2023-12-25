@@ -1,13 +1,10 @@
 package com.ysbing.yadb.wrappers.layout;
 
-import android.os.Build;
 import android.os.SystemClock;
 import android.util.Log;
-import android.util.Size;
 import android.util.Xml;
+import android.view.DisplayInfo;
 import android.view.accessibility.AccessibilityNodeInfo;
-
-import com.ysbing.yadb.DisplayInfo;
 
 import org.xmlpull.v1.XmlSerializer;
 
@@ -29,7 +26,7 @@ public class AccessibilityNodeInfoDumper {
     private static final String[] NAF_EXCLUDED_CLASSES = new String[]{android.widget.GridView.class.getName(), android.widget.GridLayout.class.getName(), android.widget.ListView.class.getName(), android.widget.TableLayout.class.getName()};
     // XML 1.0 Legal Characters (http://stackoverflow.com/a/4237934/347155)
     // #x9 | #xA | #xD | [#x20-#xD7FF] | [#xE000-#xFFFD] | [#x10000-#x10FFFF]
-    private static Pattern XML10Pattern = Pattern.compile("[^" + "\u0009\r\n" + "\u0020-\uD7FF" + "\uE000-\uFFFD" + "\ud800\udc00-\udbff\udfff" + "]");
+    private static final Pattern XML10Pattern = Pattern.compile("[^" + "	\r\n" + " -\uD7FF" + "\uE000-\uFFFD" + "\ud800\udc00-\udbff\udfff" + "]");
 
     /**
      * Using {@link AccessibilityNodeInfo} this method will walk the layout hierarchy and return
@@ -50,14 +47,10 @@ public class AccessibilityNodeInfoDumper {
             if (root != null) {
                 int width = -1;
                 int height = -1;
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                    // getDefaultDisplay method available since API level 18
-                    Size size = displayInfo.getSize();
-                    width = size.getWidth();
-                    height = size.getHeight();
-
-                    serializer.attribute("", "rotation", Integer.toString(displayInfo.getRotation()));
-                }
+                // getDefaultDisplay method available since API level 18
+                width = displayInfo.logicalWidth;
+                height = displayInfo.logicalHeight;
+                serializer.attribute("", "rotation", Integer.toString(displayInfo.rotation));
                 dumpNodeRec(root, serializer, 0, width, height);
             } else {
                 return "";
@@ -96,11 +89,8 @@ public class AccessibilityNodeInfoDumper {
         serializer.attribute("", "long-clickable", Boolean.toString(node.isLongClickable()));
         serializer.attribute("", "password", Boolean.toString(node.isPassword()));
         serializer.attribute("", "selected", Boolean.toString(node.isSelected()));
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            serializer.attribute("", "bounds", AccessibilityNodeInfoHelper.getVisibleBoundsInScreen(node, width, height).toShortString());
-            serializer.attribute("", "resource-id", safeCharSeqToString(node.getViewIdResourceName()));
-        }
+        serializer.attribute("", "bounds", AccessibilityNodeInfoHelper.getVisibleBoundsInScreen(node, width, height).toShortString());
+        serializer.attribute("", "resource-id", safeCharSeqToString(node.getViewIdResourceName()));
 
         node.refresh();
         int count = node.getChildCount();
@@ -186,8 +176,6 @@ public class AccessibilityNodeInfoDumper {
 
     // Original Google code here broke UTF characters
     private static String stripInvalidXMLChars(CharSequence charSequence) {
-        final StringBuilder sb = new StringBuilder(charSequence.length());
-        sb.append(charSequence);
-        return XML10Pattern.matcher(sb.toString()).replaceAll("?");
+        return XML10Pattern.matcher(String.valueOf(charSequence)).replaceAll("?");
     }
 }

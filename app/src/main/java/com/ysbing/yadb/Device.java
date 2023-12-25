@@ -1,6 +1,7 @@
 package com.ysbing.yadb;
 
 import android.os.SystemClock;
+import android.view.DisplayInfo;
 import android.view.InputDevice;
 import android.view.InputEvent;
 import android.view.KeyCharacterMap;
@@ -32,10 +33,6 @@ public final class Device {
         KeyEvent event = new KeyEvent(now, now, action, keyCode, repeat, metaState, KeyCharacterMap.VIRTUAL_KEYBOARD, 0, 0,
                 InputDevice.SOURCE_KEYBOARD);
         return injectEvent(event);
-    }
-
-    public boolean injectKeycode(int keyCode) {
-        return injectKeyEvent(KeyEvent.ACTION_DOWN, keyCode, 0, 0) && injectKeyEvent(KeyEvent.ACTION_UP, keyCode, 0, 0);
     }
 
     public String getClipboardText() {
@@ -77,6 +74,10 @@ public final class Device {
         if (displayManager == null) {
             return null;
         }
-        return displayManager.getDisplayInfo();
+        try {
+            return displayManager.getDisplayInfo();
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

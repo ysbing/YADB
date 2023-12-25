@@ -1,82 +1,50 @@
 package com.ysbing.yadb.wrappers;
 
-
-import android.annotation.TargetApi;
 import android.content.ClipData;
+import android.content.IClipboard;
 import android.os.Build;
 import android.os.IInterface;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
-@TargetApi(Build.VERSION_CODES.KITKAT)
 public class ClipboardManager {
-    private final IInterface manager;
-    private Method getPrimaryClipMethod;
-    private Method setPrimaryClipMethod;
+    private final IClipboard manager;
 
     public ClipboardManager(IInterface manager) {
-        this.manager = manager;
+        this.manager = (IClipboard) manager;
     }
 
-    private Method getGetPrimaryClipMethod() throws NoSuchMethodException {
-        if (getPrimaryClipMethod == null) {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                getPrimaryClipMethod = manager.getClass().getMethod("getPrimaryClip", String.class);
-            } else {
-                getPrimaryClipMethod = manager.getClass().getMethod("getPrimaryClip", String.class, int.class);
-            }
-        }
-        return getPrimaryClipMethod;
-    }
-
-    private Method getSetPrimaryClipMethod() throws NoSuchMethodException {
-        if (setPrimaryClipMethod == null) {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                setPrimaryClipMethod = manager.getClass().getMethod("setPrimaryClip", ClipData.class, String.class);
-            } else {
-                setPrimaryClipMethod = manager.getClass().getMethod("setPrimaryClip", ClipData.class, String.class, int.class);
-            }
-        }
-        return setPrimaryClipMethod;
-    }
-
-    private static ClipData getPrimaryClip(Method method, IInterface manager) throws InvocationTargetException, IllegalAccessException {
+    private static ClipData getPrimaryClip(IClipboard manager) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            return (ClipData) method.invoke(manager, ServiceManager.PACKAGE_NAME);
+            return manager.getPrimaryClip(ServiceManager.PACKAGE_NAME);
         }
-        return (ClipData) method.invoke(manager, ServiceManager.PACKAGE_NAME, ServiceManager.USER_ID);
+        return manager.getPrimaryClip(ServiceManager.PACKAGE_NAME, ServiceManager.USER_ID);
     }
 
-    private static void setPrimaryClip(Method method, IInterface manager, ClipData clipData)
-            throws InvocationTargetException, IllegalAccessException {
+    private static void setPrimaryClip(IClipboard manager, ClipData clipData) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            method.invoke(manager, clipData, ServiceManager.PACKAGE_NAME);
+            manager.setPrimaryClip(clipData, ServiceManager.PACKAGE_NAME);
         } else {
-            method.invoke(manager, clipData, ServiceManager.PACKAGE_NAME, ServiceManager.USER_ID);
+            manager.setPrimaryClip(clipData, ServiceManager.PACKAGE_NAME, ServiceManager.USER_ID);
         }
     }
 
     public CharSequence getText() {
         try {
-            Method method = getGetPrimaryClipMethod();
-            ClipData clipData = getPrimaryClip(method, manager);
+            ClipData clipData = getPrimaryClip(manager);
             if (clipData == null || clipData.getItemCount() == 0) {
                 return null;
             }
             return clipData.getItemAt(0).getText();
-        } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
+        } catch (Exception e) {
             return null;
         }
     }
 
     public boolean setText(CharSequence text) {
         try {
-            Method method = getSetPrimaryClipMethod();
             ClipData clipData = ClipData.newPlainText(null, text);
-            setPrimaryClip(method, manager, clipData);
+            setPrimaryClip(manager, clipData);
             return true;
-        } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
+        } catch (Exception e) {
             return false;
         }
     }

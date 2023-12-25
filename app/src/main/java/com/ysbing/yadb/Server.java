@@ -8,17 +8,16 @@ import android.graphics.Rect;
 import android.media.Image;
 import android.media.ImageReader;
 import android.os.Build;
-import android.os.Environment;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.SystemClock;
-import android.util.Size;
+import android.view.DisplayInfo;
 import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.Surface;
 
-import com.ysbing.yadb.wrappers.SurfaceControl;
+import com.ysbing.yadb.wrappers.SurfaceManager;
 import com.ysbing.yadb.wrappers.layout.LayoutShell;
 
 import java.io.BufferedOutputStream;
@@ -29,7 +28,7 @@ import java.util.concurrent.TimeoutException;
 
 public class Server {
 
-    private static final String FLAG_ENTER = "~ENTER~";
+    private static final String FLAG_ENTER = "\\n";
     private static final String FLAG_CLEAR = "~CLEAR~";
     private static final File LAYOUT_DEFAULT_FILE = new File("/data/local/tmp", "yadb_layout_dump.xml");
     private static final File SCREENSHOT_DEFAULT_FILE = new File("/data/local/tmp", "yadb_screenshot.png");
@@ -101,29 +100,28 @@ public class Server {
         }
         boolean secure = Build.VERSION.SDK_INT < Build.VERSION_CODES.R
                 || (Build.VERSION.SDK_INT == Build.VERSION_CODES.R && !"S".equals(Build.VERSION.CODENAME));
-        IBinder iBinder = SurfaceControl.createDisplay("yadb", secure);
-        Size size = displayInfo.getSize();
-        Rect rect = new Rect(0, 0, size.getWidth(), size.getHeight());
+        IBinder iBinder = SurfaceManager.createDisplay("yadb", secure);
+        Rect rect = new Rect(0, 0, displayInfo.logicalWidth, displayInfo.logicalHeight);
         int imageWidth, imageHeight;
-        int rotation = displayInfo.getRotation();
+        int rotation = displayInfo.rotation;
         //横屏
         if (rotation == 1 || rotation == 3) {
-            imageWidth = size.getHeight();
-            imageHeight = size.getWidth();
+            imageWidth = displayInfo.logicalHeight;
+            imageHeight = displayInfo.logicalWidth;
         } else {
-            imageWidth = size.getWidth();
-            imageHeight = size.getHeight();
+            imageWidth = displayInfo.logicalWidth;
+            imageHeight = displayInfo.logicalHeight;
         }
         @SuppressLint("WrongConstant")
         ImageReader imageReader = ImageReader.newInstance(imageWidth, imageHeight, PixelFormat.RGBA_8888, 1);
         Surface surface = imageReader.getSurface();
-        SurfaceControl.openTransaction();
+        SurfaceManager.openTransaction();
         try {
-            SurfaceControl.setDisplaySurface(iBinder, surface);
-            SurfaceControl.setDisplayProjection(iBinder, displayInfo.getRotation(), rect, rect);
-            SurfaceControl.setDisplayLayerStack(iBinder, displayInfo.getLayerStack());
+            SurfaceManager.setDisplaySurface(iBinder, surface);
+            SurfaceManager.setDisplayProjection(iBinder, displayInfo.rotation, rect, rect);
+            SurfaceManager.setDisplayLayerStack(iBinder, displayInfo.layerStack);
         } finally {
-            SurfaceControl.closeTransaction();
+            SurfaceManager.closeTransaction();
         }
         Image image;
         long startTime = System.currentTimeMillis();
@@ -159,7 +157,7 @@ public class Server {
         Bitmap bitmap = Bitmap.createBitmap(width + rowPadding / pixelStride, height, Bitmap.Config.ARGB_8888);
         bitmap.copyPixelsFromBuffer(buffer);
         image.close();
-        SurfaceControl.destroyDisplay(iBinder);
+        SurfaceManager.destroyDisplay(iBinder);
         surface.release();
         Bitmap resultBitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true);
         bitmap.recycle();
