@@ -15,15 +15,20 @@ public class ClipboardManager {
     private static ClipData getPrimaryClip(IClipboard manager) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             return manager.getPrimaryClip(ServiceManager.PACKAGE_NAME);
+        } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            return manager.getPrimaryClip(ServiceManager.PACKAGE_NAME, ServiceManager.USER_ID);
+        } else {
+            return manager.getPrimaryClip(ServiceManager.PACKAGE_NAME, null, ServiceManager.USER_ID, 0);
         }
-        return manager.getPrimaryClip(ServiceManager.PACKAGE_NAME, ServiceManager.USER_ID);
     }
 
     private static void setPrimaryClip(IClipboard manager, ClipData clipData) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             manager.setPrimaryClip(clipData, ServiceManager.PACKAGE_NAME);
-        } else {
+        } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             manager.setPrimaryClip(clipData, ServiceManager.PACKAGE_NAME, ServiceManager.USER_ID);
+        } else {
+            manager.setPrimaryClip(clipData, ServiceManager.PACKAGE_NAME, null, ServiceManager.USER_ID, 0);
         }
     }
 
