@@ -27,6 +27,7 @@ public class AccessibilityNodeInfoDumper {
     // XML 1.0 Legal Characters (http://stackoverflow.com/a/4237934/347155)
     // #x9 | #xA | #xD | [#x20-#xD7FF] | [#xE000-#xFFFD] | [#x10000-#x10FFFF]
     private static final Pattern XML10Pattern = Pattern.compile("[^" + "	\r\n" + " -\uD7FF" + "\uE000-\uFFFD" + "\ud800\udc00-\udbff\udfff" + "]");
+    private static final Pattern EmojiPattern = Pattern.compile("[^\\p{L}\\p{N}\\p{P}\\p{Z}]");
 
     /**
      * Using {@link AccessibilityNodeInfo} this method will walk the layout hierarchy and return
@@ -176,6 +177,7 @@ public class AccessibilityNodeInfoDumper {
 
     // Original Google code here broke UTF characters
     private static String stripInvalidXMLChars(CharSequence charSequence) {
-        return XML10Pattern.matcher(String.valueOf(charSequence)).replaceAll("?");
+        String result = EmojiPattern.matcher(String.valueOf(charSequence)).replaceAll("?");
+        return XML10Pattern.matcher(result).replaceAll("?");
     }
 }
