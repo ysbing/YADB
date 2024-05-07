@@ -19,7 +19,7 @@ adb push yadb /data/local/tmp & adb shell app_process -Djava.class.path=/data/lo
 adb push yadb /data/local/tmp & adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -readClipboard
 ```
 
-## 截屏
+### 截屏
 
 YADB 允许您在不考虑活动 (Activity) 禁止截屏的情况下进行屏幕截图。
 
@@ -27,7 +27,7 @@ YADB 允许您在不考虑活动 (Activity) 禁止截屏的情况下进行屏幕
 adb push yadb /data/local/tmp & adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -screenshot
 ```
 
-## 布局抓取
+### 布局抓取
 
 相比 `adb shell uiautomator dump`，YADB 提供了更为高效的布局抓取功能，尤其在某些界面 uiautomator
 无法获取时。
@@ -36,20 +36,13 @@ adb push yadb /data/local/tmp & adb shell app_process -Djava.class.path=/data/lo
 adb push yadb /data/local/tmp & adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -layout
 ```
 
-## 长按屏幕
+### 长按屏幕
 
 该功能可用于自动化测试，实现屏幕的长按操作。
 
 ```bash
 adb push yadb /data/local/tmp & adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -touch 500 500 2000
 ```
-
-## 致谢
-
-[scrcpy](https://github.com/Genymobile/scrcpy) 本项目使用了其复制文本到粘贴板的逻辑。
-
-[YRouter](https://github.com/ysbing/yrouter) 这是我的另一个项目，一种无损耗的 Android
-路由库。在这里，我们使用了其免反射调用系统类的插件。
 
 ## 许可证
 
