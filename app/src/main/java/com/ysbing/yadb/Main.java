@@ -5,6 +5,7 @@ public class Main {
     private static final String ARG_TOUCH = "-touch";
     private static final String ARG_LAYOUT = "-layout";
     private static final String ARG_SCREENSHOT = "-screenshot";
+    private static final String ARG_READ_CLIPBOARD = "-readClipboard";
 
     public static void main(String[] args) {
         try {
@@ -34,6 +35,9 @@ public class Main {
                             Server.screenshot(null);
                         }
                         break;
+                    case ARG_READ_CLIPBOARD:
+                        Server.readClipboard();
+                        break;
                     default:
                         break;
                 }
@@ -46,6 +50,6 @@ public class Main {
     }
 
     private static boolean check(String arg) {
-        return arg.equals(ARG_KEY_BOARD) || arg.equals(ARG_TOUCH) || arg.equals(ARG_LAYOUT) || arg.equals(ARG_SCREENSHOT);
+        return arg.equals(ARG_KEY_BOARD) || arg.equals(ARG_TOUCH) || arg.equals(ARG_LAYOUT) || arg.equals(ARG_SCREENSHOT) || arg.equals(ARG_READ_CLIPBOARD);
     }
 }

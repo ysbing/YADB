@@ -55,6 +55,11 @@ public class Server {
         }
     }
 
+    public static void readClipboard() {
+        String clipboard = device.getClipboardText();
+        System.out.println(clipboard);
+    }
+
     public static void touch(float x, float y, long pressedTime) throws Exception {
         long downTime = SystemClock.uptimeMillis();
         MotionEvent.PointerProperties[] properties = new MotionEvent.PointerProperties[1];
