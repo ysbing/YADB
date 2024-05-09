@@ -6,20 +6,9 @@ import android.os.HandlerThread;
 import android.view.DisplayInfo;
 import android.view.accessibility.AccessibilityNodeInfo;
 
-import org.xml.sax.InputSource;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.concurrent.TimeoutException;
-
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.sax.SAXSource;
-import javax.xml.transform.sax.SAXTransformerFactory;
-import javax.xml.transform.stream.StreamResult;
 
 public class LayoutShell {
     private static final String HANDLER_THREAD_NAME = "LayoutShellThread";
@@ -40,7 +29,7 @@ public class LayoutShell {
             } while (info == null);
             String content = AccessibilityNodeInfoDumper.getWindowXMLHierarchy(info, displayInfo);
             FileWriter writer = new FileWriter(file);
-            writer.write(formatXml(content));
+            writer.write(XmlUtil.formatXml(content));
             writer.close();
             System.out.println("layout dumped to:" + file.getAbsolutePath());
         } finally {
@@ -49,20 +38,6 @@ public class LayoutShell {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
-    }
-
-    private static String formatXml(String xml) {
-        try {
-            Transformer serializer = SAXTransformerFactory.newInstance().newTransformer();
-            serializer.setOutputProperty(OutputKeys.INDENT, "yes");
-            serializer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-            Source xmlSource = new SAXSource(new InputSource(new ByteArrayInputStream(xml.getBytes())));
-            StreamResult res = new StreamResult(new ByteArrayOutputStream());
-            serializer.transform(xmlSource, res);
-            return res.getOutputStream().toString();
-        } catch (Exception e) {
-            return xml;
         }
     }
 
