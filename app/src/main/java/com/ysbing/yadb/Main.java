@@ -1,5 +1,8 @@
 package com.ysbing.yadb;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 public class Main {
     private static final String ARG_KEY_BOARD = "-keyboard";
     private static final String ARG_TOUCH = "-touch";
@@ -9,6 +12,7 @@ public class Main {
 
     public static void main(String[] args) {
         try {
+            Thread.setDefaultUncaughtExceptionHandler((t, e) -> System.out.println("UncaughtException:" + getStackTraceAsString(e)));
             if (check(args[0])) {
                 switch (args[0]) {
                     case ARG_KEY_BOARD:
@@ -42,14 +46,22 @@ public class Main {
                         break;
                 }
             } else {
-                System.out.println("参数不对");
+                System.out.println("Invalid argument");
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Throwable e) {
+            System.out.println("MainException:" + getStackTraceAsString(e));
         }
     }
 
     private static boolean check(String arg) {
         return arg.equals(ARG_KEY_BOARD) || arg.equals(ARG_TOUCH) || arg.equals(ARG_LAYOUT) || arg.equals(ARG_SCREENSHOT) || arg.equals(ARG_READ_CLIPBOARD);
+    }
+
+    private static String getStackTraceAsString(Throwable throwable) {
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+        throwable.printStackTrace(printWriter);
+        printWriter.flush();
+        return stringWriter.toString();
     }
 }
