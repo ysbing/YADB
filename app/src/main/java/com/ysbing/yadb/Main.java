@@ -12,7 +12,7 @@ public class Main {
 
     public static void main(String[] args) {
         try {
-            Thread.setDefaultUncaughtExceptionHandler((t, e) -> System.out.println("UncaughtException:" + getStackTraceAsString(e)));
+            Thread.setDefaultUncaughtExceptionHandler((t, e) -> System.out.println(t.getName() + ",UncaughtException:" + getStackTraceAsString(e)));
             if (check(args[0])) {
                 switch (args[0]) {
                     case ARG_KEY_BOARD:

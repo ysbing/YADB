@@ -15,8 +15,14 @@ public class ClipboardManager {
     private static ClipData getPrimaryClip(IClipboard manager) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             return manager.getPrimaryClip(ServiceManager.PACKAGE_NAME);
-        } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             return manager.getPrimaryClip(ServiceManager.PACKAGE_NAME, ServiceManager.USER_ID);
+        } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            try {
+                return manager.getPrimaryClip(ServiceManager.PACKAGE_NAME, null, ServiceManager.USER_ID);
+            } catch (NoSuchMethodError e) {
+                return manager.getPrimaryClip(ServiceManager.PACKAGE_NAME, ServiceManager.USER_ID);
+            }
         } else {
             return manager.getPrimaryClip(ServiceManager.PACKAGE_NAME, null, ServiceManager.USER_ID, 0);
         }
@@ -25,8 +31,14 @@ public class ClipboardManager {
     private static void setPrimaryClip(IClipboard manager, ClipData clipData) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             manager.setPrimaryClip(clipData, ServiceManager.PACKAGE_NAME);
-        } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             manager.setPrimaryClip(clipData, ServiceManager.PACKAGE_NAME, ServiceManager.USER_ID);
+        } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            try {
+                manager.setPrimaryClip(clipData, ServiceManager.PACKAGE_NAME, null, ServiceManager.USER_ID);
+            } catch (NoSuchMethodError e) {
+                manager.setPrimaryClip(clipData, ServiceManager.PACKAGE_NAME, ServiceManager.USER_ID);
+            }
         } else {
             manager.setPrimaryClip(clipData, ServiceManager.PACKAGE_NAME, null, ServiceManager.USER_ID, 0);
         }
