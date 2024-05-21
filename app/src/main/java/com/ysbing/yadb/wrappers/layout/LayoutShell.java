@@ -3,6 +3,7 @@ package com.ysbing.yadb.wrappers.layout;
 import android.app.UiAutomation;
 import android.app.UiAutomationConnection;
 import android.os.HandlerThread;
+import android.os.Looper;
 import android.view.DisplayInfo;
 import android.view.accessibility.AccessibilityNodeInfo;
 
@@ -33,11 +34,7 @@ public class LayoutShell {
             writer.close();
             System.out.println("layout dumped to:" + file.getAbsolutePath());
         } finally {
-            try {
-                shell.disconnect();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            shell.disconnect();
         }
     }
 
@@ -46,15 +43,12 @@ public class LayoutShell {
             throw new IllegalStateException("Already connected!");
         }
         mHandlerThread.start();
-        mUiAutomation = new UiAutomation(mHandlerThread.getLooper(), new UiAutomationConnection());
-        int connectionId = 0;
-        try {
-            connectionId = mUiAutomation.getConnectionId();
-        } catch (IllegalStateException ignored) {
+        Looper looper = mHandlerThread.getLooper();
+        while (looper == null) {
+            looper = mHandlerThread.getLooper();
         }
-        if (connectionId != 2) {
-            mUiAutomation.connect();
-        }
+        mUiAutomation = new UiAutomation(looper, new UiAutomationConnection());
+        mUiAutomation.connect();
     }
 
     public void disconnect() {
