@@ -3,7 +3,6 @@ package com.ysbing.yadb.wrappers.layout;
 import android.app.UiAutomation;
 import android.app.UiAutomationConnection;
 import android.os.HandlerThread;
-import android.os.Looper;
 import android.view.DisplayInfo;
 import android.view.accessibility.AccessibilityNodeInfo;
 
@@ -43,11 +42,7 @@ public class LayoutShell {
             throw new IllegalStateException("Already connected!");
         }
         mHandlerThread.start();
-        Looper looper = mHandlerThread.getLooper();
-        while (looper == null) {
-            looper = mHandlerThread.getLooper();
-        }
-        mUiAutomation = new UiAutomation(looper, new UiAutomationConnection());
+        mUiAutomation = new UiAutomation(mHandlerThread.getLooper(), new UiAutomationConnection());
         mUiAutomation.connect();
     }
 
