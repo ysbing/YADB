@@ -1,5 +1,7 @@
 package com.ysbing.yadb;
 
+import android.os.Looper;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
@@ -13,6 +15,7 @@ public class Main {
     public static void main(String[] args) {
         try {
             Thread.setDefaultUncaughtExceptionHandler((t, e) -> System.out.println(t.getName() + ",UncaughtException:" + getStackTraceAsString(e)));
+            Looper.prepareMainLooper();
             if (check(args[0])) {
                 switch (args[0]) {
                     case ARG_KEY_BOARD:

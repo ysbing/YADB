@@ -98,7 +98,6 @@ public class Server {
     }
 
     public static void screenshot(String path) throws Exception {
-        Looper.prepareMainLooper();
         DisplayInfo displayInfo = device.getDisplayInfo();
         if (displayInfo == null) {
             return;
