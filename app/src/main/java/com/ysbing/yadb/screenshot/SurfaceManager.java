@@ -1,4 +1,4 @@
-package com.ysbing.yadb.wrappers;
+package com.ysbing.yadb.screenshot;
 
 import android.graphics.Rect;
 import android.os.IBinder;

@@ -1,4 +1,4 @@
-package com.ysbing.yadb.wrappers;
+package com.ysbing.yadb.screenshot;
 
 import android.annotation.SuppressLint;
 import android.content.IClipboard;
@@ -6,6 +6,9 @@ import android.hardware.display.IDisplayManager;
 import android.hardware.input.IInputManager;
 import android.os.IBinder;
 import android.os.IInterface;
+
+import com.ysbing.yadb.input.ClipboardManager;
+import com.ysbing.yadb.input.InputManager;
 
 import java.lang.reflect.Method;
 
@@ -18,6 +21,12 @@ public final class ServiceManager {
     private ClipboardManager clipboardManager;
     private DisplayManager displayManager;
     private InputManager inputManager;
+
+    public static ServiceManager instance = new ServiceManager();
+
+    private ServiceManager() {
+    }
+
 
     private IInterface getService(String service, String type) {
         try {

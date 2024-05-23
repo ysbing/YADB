@@ -1,9 +1,11 @@
-package com.ysbing.yadb.wrappers;
+package com.ysbing.yadb.input;
 
 import android.content.ClipData;
 import android.content.IClipboard;
 import android.os.Build;
 import android.os.IInterface;
+
+import com.ysbing.yadb.screenshot.ServiceManager;
 
 public class ClipboardManager {
     private final IClipboard manager;

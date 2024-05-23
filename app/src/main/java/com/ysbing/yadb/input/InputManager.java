@@ -1,4 +1,4 @@
-package com.ysbing.yadb.wrappers;
+package com.ysbing.yadb.input;
 
 import android.hardware.input.IInputManager;
 import android.os.IInterface;

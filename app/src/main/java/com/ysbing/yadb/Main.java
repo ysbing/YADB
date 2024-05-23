@@ -2,6 +2,11 @@ package com.ysbing.yadb;
 
 import android.os.Looper;
 
+import com.ysbing.yadb.input.Keyboard;
+import com.ysbing.yadb.input.Touch;
+import com.ysbing.yadb.layout.Layout;
+import com.ysbing.yadb.screenshot.Screenshot;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
@@ -19,31 +24,31 @@ public class Main {
             if (check(args[0])) {
                 switch (args[0]) {
                     case ARG_KEY_BOARD:
-                        Server.keyboard(args[1]);
+                        Keyboard.run(args[1]);
                         break;
                     case ARG_TOUCH:
                         if (args.length == 4) {
-                            Server.touch(Float.parseFloat(args[1]), Float.parseFloat(args[2]), Long.parseLong(args[3]));
+                            Touch.run(Float.parseFloat(args[1]), Float.parseFloat(args[2]), Long.parseLong(args[3]));
                         } else {
-                            Server.touch(Float.parseFloat(args[1]), Float.parseFloat(args[2]), -1L);
+                            Touch.run(Float.parseFloat(args[1]), Float.parseFloat(args[2]), -1L);
                         }
                         break;
                     case ARG_LAYOUT:
                         if (args.length == 2) {
-                            Server.layout(args[1]);
+                            Layout.run(args[1]);
                         } else {
-                            Server.layout(null);
+                            Layout.run(null);
                         }
                         break;
                     case ARG_SCREENSHOT:
                         if (args.length == 2) {
-                            Server.screenshot(args[1]);
+                            Screenshot.run(args[1]);
                         } else {
-                            Server.screenshot(null);
+                            Screenshot.run(null);
                         }
                         break;
                     case ARG_READ_CLIPBOARD:
-                        Server.readClipboard();
+                        Keyboard.readClipboard();
                         break;
                     default:
                         break;

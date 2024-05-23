@@ -1,4 +1,4 @@
-package com.ysbing.yadb.wrappers.layout;
+package com.ysbing.yadb.layout;
 
 import android.app.UiAutomation;
 import android.app.UiAutomationConnection;
