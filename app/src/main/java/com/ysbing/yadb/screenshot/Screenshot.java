@@ -1,10 +1,12 @@
 package com.ysbing.yadb.screenshot;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.hardware.display.DisplayManager;
+import android.hardware.display.IDisplayManager;
 import android.media.Image;
 import android.media.ImageReader;
 import android.os.Build;
@@ -12,6 +14,7 @@ import android.os.IBinder;
 import android.view.Display;
 import android.view.DisplayInfo;
 import android.view.Surface;
+import android.view.SurfaceControl;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -29,7 +32,7 @@ public class Screenshot {
         }
         boolean secure = Build.VERSION.SDK_INT < Build.VERSION_CODES.R
                 || (Build.VERSION.SDK_INT == Build.VERSION_CODES.R && !"S".equals(Build.VERSION.CODENAME));
-        IBinder iBinder = SurfaceManager.createDisplay("yadb", secure);
+        IBinder iBinder = SurfaceControl.createDisplay("yadb", secure);
         Rect rect = new Rect(0, 0, displayInfo.logicalWidth, displayInfo.logicalHeight);
         int imageWidth, imageHeight;
         int rotation = displayInfo.rotation;
@@ -44,13 +47,13 @@ public class Screenshot {
         ImageReader imageReader = ImageReader.newInstance(imageWidth, imageHeight, PixelFormat.RGBA_8888, 1);
         Surface surface = imageReader.getSurface();
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            SurfaceManager.openTransaction();
+            SurfaceControl.openTransaction();
             try {
-                SurfaceManager.setDisplaySurface(iBinder, surface);
-                SurfaceManager.setDisplayProjection(iBinder, displayInfo.rotation, rect, rect);
-                SurfaceManager.setDisplayLayerStack(iBinder, displayInfo.layerStack);
+                SurfaceControl.setDisplaySurface(iBinder, surface);
+                SurfaceControl.setDisplayProjection(iBinder, displayInfo.rotation, rect, rect);
+                SurfaceControl.setDisplayLayerStack(iBinder, displayInfo.layerStack);
             } finally {
-                SurfaceManager.closeTransaction();
+                SurfaceControl.closeTransaction();
             }
         } else {
             DisplayManager.createVirtualDisplay("yadb", imageWidth, imageHeight, Display.DEFAULT_DISPLAY, surface);
@@ -89,7 +92,7 @@ public class Screenshot {
         Bitmap bitmap = Bitmap.createBitmap(width + rowPadding / pixelStride, height, Bitmap.Config.ARGB_8888);
         bitmap.copyPixelsFromBuffer(buffer);
         image.close();
-        SurfaceManager.destroyDisplay(iBinder);
+        SurfaceControl.destroyDisplay(iBinder);
         surface.release();
         Bitmap resultBitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true);
         bitmap.recycle();
@@ -110,14 +113,10 @@ public class Screenshot {
     }
 
     private static DisplayInfo getDisplayInfo() {
-        com.ysbing.yadb.screenshot.DisplayManager displayManager = ServiceManager.instance.getDisplayManager();
-        if (displayManager == null) {
+        IDisplayManager clipboard = IDisplayManager.Stub.asInterface(android.os.ServiceManager.getService(Context.DISPLAY_SERVICE));
+        if (clipboard == null) {
             return null;
         }
-        try {
-            return displayManager.getDisplayInfo();
-        } catch (Exception e) {
-            return null;
-        }
+        return clipboard.getDisplayInfo(Display.DEFAULT_DISPLAY);
     }
 }

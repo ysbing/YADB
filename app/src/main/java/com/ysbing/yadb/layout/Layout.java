@@ -1,9 +1,9 @@
 package com.ysbing.yadb.layout;
 
+import android.content.Context;
+import android.hardware.display.IDisplayManager;
+import android.view.Display;
 import android.view.DisplayInfo;
-
-import com.ysbing.yadb.screenshot.DisplayManager;
-import com.ysbing.yadb.screenshot.ServiceManager;
 
 import java.io.File;
 
@@ -23,14 +23,10 @@ public class Layout {
     }
 
     private static DisplayInfo getDisplayInfo() {
-        DisplayManager displayManager = ServiceManager.instance.getDisplayManager();
-        if (displayManager == null) {
+        IDisplayManager clipboard = IDisplayManager.Stub.asInterface(android.os.ServiceManager.getService(Context.DISPLAY_SERVICE));
+        if (clipboard == null) {
             return null;
         }
-        try {
-            return displayManager.getDisplayInfo();
-        } catch (Exception e) {
-            return null;
-        }
+        return clipboard.getDisplayInfo(Display.DEFAULT_DISPLAY);
     }
 }

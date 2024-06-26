@@ -1,12 +1,13 @@
 package com.ysbing.yadb.input;
 
+import android.content.Context;
+import android.content.IClipboard;
+import android.hardware.input.IInputManager;
 import android.os.SystemClock;
 import android.view.InputDevice;
 import android.view.InputEvent;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
-
-import com.ysbing.yadb.screenshot.ServiceManager;
 
 public class Keyboard {
     private static final String FLAG_ENTER = "\\n";
@@ -33,19 +34,19 @@ public class Keyboard {
         }
     }
 
-    private static boolean injectKeyEvent(int action, int keyCode, int metaState) {
+    private static void injectKeyEvent(int action, int keyCode, int metaState) {
         long now = SystemClock.uptimeMillis();
         KeyEvent event = new KeyEvent(now, now, action, keyCode, 0, metaState, KeyCharacterMap.VIRTUAL_KEYBOARD, 0, 0,
                 InputDevice.SOURCE_KEYBOARD);
-        return injectEvent(event);
+        injectEvent(event);
     }
 
     private static boolean setClipboardText(String text) {
-        ClipboardManager clipboardManager = ServiceManager.instance.getClipboardManager();
-        if (clipboardManager == null) {
+        IClipboard clipboard = IClipboard.Stub.asInterface(android.os.ServiceManager.getService(Context.CLIPBOARD_SERVICE));
+        if (clipboard == null) {
             return false;
         }
-
+        ClipboardManager clipboardManager = new ClipboardManager(clipboard);
         String currentClipboard = getClipboardText();
         if (currentClipboard != null && currentClipboard.equals(text)) {
             return true;
@@ -55,10 +56,11 @@ public class Keyboard {
     }
 
     private static String getClipboardText() {
-        ClipboardManager clipboardManager = ServiceManager.instance.getClipboardManager();
-        if (clipboardManager == null) {
+        IClipboard clipboard = IClipboard.Stub.asInterface(android.os.ServiceManager.getService(Context.CLIPBOARD_SERVICE));
+        if (clipboard == null) {
             return null;
         }
+        ClipboardManager clipboardManager = new ClipboardManager(clipboard);
         CharSequence s = clipboardManager.getText();
         if (s == null) {
             return null;
@@ -66,9 +68,12 @@ public class Keyboard {
         return s.toString();
     }
 
-    public static boolean injectEvent(InputEvent inputEvent) {
-        return ServiceManager.instance.getInputManager().injectInputEvent(inputEvent,
-                InputManager.INJECT_INPUT_EVENT_MODE_ASYNC);
+    public static void injectEvent(InputEvent inputEvent) {
+        IInputManager inputManager = IInputManager.Stub.asInterface(android.os.ServiceManager.getService(Context.INPUT_SERVICE));
+        if (inputManager == null) {
+            return;
+        }
+        inputManager.injectInputEvent(inputEvent, 0);
     }
 
     public static void readClipboard() {
