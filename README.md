@@ -1,4 +1,4 @@
-Language: [English](https://github.com/ysbing/YADB/blob/main/README.md) | [中文简体](https://github.com/ysbing/YADB/blob/main/README_zh.md)
+Language: [English](https://github.com/ysbing/YADB/blob/master/README.md) | [中文简体](https://github.com/ysbing/YADB/blob/master/README_zh.md)
 
 # YADB
 
