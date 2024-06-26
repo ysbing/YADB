@@ -11,6 +11,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 public class Main {
+    public static final String PACKAGE_NAME = "com.android.shell";
+    public static final int USER_ID = 0;
     private static final String ARG_KEY_BOARD = "-keyboard";
     private static final String ARG_TOUCH = "-touch";
     private static final String ARG_LAYOUT = "-layout";

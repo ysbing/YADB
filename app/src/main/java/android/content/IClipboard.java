@@ -2,12 +2,12 @@ package android.content;
 
 import android.annotation.TargetApi;
 import android.os.Build;
-import android.os.IInterface;
+import android.os.IBinder;
 
 import com.ysbing.yrouter.api.YRouterSystem;
 
 @YRouterSystem
-public interface IClipboard extends IInterface {
+public interface IClipboard {
     ClipData getPrimaryClip(String pkg);
 
     @TargetApi(Build.VERSION_CODES.Q)
@@ -30,4 +30,11 @@ public interface IClipboard extends IInterface {
     @TargetApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     void setPrimaryClip(ClipData clip, String callingPackage, String attributionTag, int userId,
                         int deviceId);
+
+    @YRouterSystem
+    class Stub {
+        public static IClipboard asInterface(IBinder obj) {
+            return null;
+        }
+    }
 }
