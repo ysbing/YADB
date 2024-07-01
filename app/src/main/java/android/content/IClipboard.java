@@ -19,6 +19,9 @@ public interface IClipboard {
     @TargetApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     ClipData getPrimaryClip(String pkg, String attributionTag, int userId, int deviceId);
 
+    @TargetApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    ClipData getPrimaryClip(String pkg, String attributionTag, int userId, int deviceId, String targetPackage);
+
     void setPrimaryClip(ClipData clip, String callingPackage);
 
     @TargetApi(Build.VERSION_CODES.Q)

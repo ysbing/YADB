@@ -25,7 +25,11 @@ public class ClipboardManager {
                 return manager.getPrimaryClip(Main.PACKAGE_NAME, Main.USER_ID);
             }
         } else {
-            return manager.getPrimaryClip(Main.PACKAGE_NAME, null, Main.USER_ID, 0);
+            try {
+                return manager.getPrimaryClip(Main.PACKAGE_NAME, null, Main.USER_ID, 0);
+            } catch (NoSuchMethodError e) {
+                return manager.getPrimaryClip(Main.PACKAGE_NAME, null, Main.USER_ID, 0, null);
+            }
         }
     }
 
