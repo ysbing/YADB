@@ -6,8 +6,6 @@ import android.os.HandlerThread;
 import android.view.DisplayInfo;
 import android.view.accessibility.AccessibilityNodeInfo;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.util.concurrent.TimeoutException;
 
 public class LayoutShell {
@@ -22,16 +20,13 @@ public class LayoutShell {
             AccessibilityNodeInfo info;
             long startTime = System.currentTimeMillis();
             do {
-                if (System.currentTimeMillis() - startTime >= 5000) {
+                if (System.currentTimeMillis() - startTime >= 3000) {
                     throw new TimeoutException();
                 }
                 info = shell.mUiAutomation.getRootInActiveWindow();
             } while (info == null);
             String content = AccessibilityNodeInfoDumper.getWindowJSONHierarchy(info, displayInfo);
-            // FileWriter writer = new FileWriter(file);
-            // writer.write(XmlUtil.formatXml(content));
-            // writer.close();
-            System.out.println(content);
+            System.out.println(content.toString().replace("\\/", "/"));
         } finally {
             shell.disconnect();
         }

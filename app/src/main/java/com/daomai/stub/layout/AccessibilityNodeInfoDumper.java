@@ -37,18 +37,19 @@ public class AccessibilityNodeInfoDumper {
             if (root != null) {
                 int width = displayInfo.logicalWidth;
                 int height = displayInfo.logicalHeight;
-                collectNodes(root, jsonArray,0, width, height);
+                collectNodes(root, jsonArray, 0, width, height);
             }
         } catch (Exception e) {
             Log.e(TAG, "failed to dump window to JSON", e);
         }
         final long endTime = SystemClock.uptimeMillis();
         Log.i(TAG, "Fetch time: " + (endTime - startTime) + "ms");
-        return jsonArray.toString();
+        return jsonArray;
     }
 
     private static void collectNodes(AccessibilityNodeInfo node, JSONArray jsonArray, int index, int width, int height) throws JSONException {
         JSONObject nodeJson = new JSONObject();
+        
         if (!nafExcludedClass(node) && !nafCheck(node))
             nodeJson.put("NAF", true);
 
@@ -102,8 +103,6 @@ public class AccessibilityNodeInfoDumper {
                         : "";
         nodeJson.put("content-desc", _ContentDescription);
                         
-
-
 
         jsonArray.put(nodeJson);
 
