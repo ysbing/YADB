@@ -1,4 +1,4 @@
-package com.ysbing.yadb.layout;
+package com.daomai.stub.layout;
 
 import org.xml.sax.InputSource;
 

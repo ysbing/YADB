@@ -1,4 +1,4 @@
-package com.ysbing.yadb.layout;
+package com.daomai.stub.layout;
 
 import android.graphics.Rect;
 import android.view.accessibility.AccessibilityNodeInfo;

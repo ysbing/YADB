@@ -1,4 +1,4 @@
-package com.ysbing.yadb.input;
+package com.daomai.stub.input;
 
 import android.os.SystemClock;
 import android.view.InputDevice;

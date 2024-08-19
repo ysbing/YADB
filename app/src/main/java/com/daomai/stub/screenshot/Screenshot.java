@@ -1,4 +1,4 @@
-package com.ysbing.yadb.screenshot;
+package com.daomai.stub.screenshot;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -23,7 +23,7 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.TimeoutException;
 
 public class Screenshot {
-    private static final File SCREENSHOT_DEFAULT_FILE = new File("/data/local/tmp", "yadb_screenshot.png");
+    private static final File SCREENSHOT_DEFAULT_FILE = new File("/data/local/tmp", "daomai_screenshot.png");
 
     public static void run(String path) throws Exception {
         DisplayInfo displayInfo = getDisplayInfo();
@@ -32,7 +32,7 @@ public class Screenshot {
         }
         boolean secure = Build.VERSION.SDK_INT < Build.VERSION_CODES.R
                 || (Build.VERSION.SDK_INT == Build.VERSION_CODES.R && !"S".equals(Build.VERSION.CODENAME));
-        IBinder iBinder = SurfaceControl.createDisplay("yadb", secure);
+        IBinder iBinder = SurfaceControl.createDisplay("daomai", secure);
         Rect rect = new Rect(0, 0, displayInfo.logicalWidth, displayInfo.logicalHeight);
         int imageWidth, imageHeight;
         int rotation = displayInfo.rotation;
@@ -56,7 +56,7 @@ public class Screenshot {
                 SurfaceControl.closeTransaction();
             }
         } else {
-            DisplayManager.createVirtualDisplay("yadb", imageWidth, imageHeight, Display.DEFAULT_DISPLAY, surface);
+            DisplayManager.createVirtualDisplay("daomai", imageWidth, imageHeight, Display.DEFAULT_DISPLAY, surface);
         }
         Image image;
         long startTime = System.currentTimeMillis();

@@ -1,4 +1,4 @@
-package com.ysbing.yadb.layout;
+package com.daomai.stub.layout;
 
 import android.app.UiAutomation;
 import android.app.UiAutomationConnection;
@@ -27,11 +27,11 @@ public class LayoutShell {
                 }
                 info = shell.mUiAutomation.getRootInActiveWindow();
             } while (info == null);
-            String content = AccessibilityNodeInfoDumper.getWindowXMLHierarchy(info, displayInfo);
-            FileWriter writer = new FileWriter(file);
-            writer.write(XmlUtil.formatXml(content));
-            writer.close();
-            System.out.println("layout dumped to:" + file.getAbsolutePath());
+            String content = AccessibilityNodeInfoDumper.getWindowJSONHierarchy(info, displayInfo);
+            // FileWriter writer = new FileWriter(file);
+            // writer.write(XmlUtil.formatXml(content));
+            // writer.close();
+            System.out.println(content);
         } finally {
             shell.disconnect();
         }

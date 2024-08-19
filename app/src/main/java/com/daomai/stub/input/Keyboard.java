@@ -1,4 +1,4 @@
-package com.ysbing.yadb.input;
+package com.daomai.stub.input;
 
 import android.content.Context;
 import android.content.IClipboard;

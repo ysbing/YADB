@@ -1,11 +1,11 @@
-package com.ysbing.yadb;
+package com.daomai.stub;
 
 import android.os.Looper;
 
-import com.ysbing.yadb.input.Keyboard;
-import com.ysbing.yadb.input.Touch;
-import com.ysbing.yadb.layout.Layout;
-import com.ysbing.yadb.screenshot.Screenshot;
+import com.daomai.stub.input.Keyboard;
+import com.daomai.stub.input.Touch;
+import com.daomai.stub.layout.Layout;
+import com.daomai.stub.screenshot.Screenshot;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -15,7 +15,7 @@ public class Main {
     public static final int USER_ID = 0;
     private static final String ARG_KEY_BOARD = "-keyboard";
     private static final String ARG_TOUCH = "-touch";
-    private static final String ARG_LAYOUT = "-layout";
+    private static final String ARG_LAYOUT = "-dump";
     private static final String ARG_SCREENSHOT = "-screenshot";
     private static final String ARG_READ_CLIPBOARD = "-readClipboard";
 

@@ -1,10 +1,10 @@
-package com.ysbing.yadb.input;
+package com.daomai.stub.input;
 
 import android.content.ClipData;
 import android.content.IClipboard;
 import android.os.Build;
 
-import com.ysbing.yadb.Main;
+import com.daomai.stub.Main;
 
 public class ClipboardManager {
     private final IClipboard manager;

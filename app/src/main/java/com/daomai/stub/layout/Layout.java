@@ -1,4 +1,4 @@
-package com.ysbing.yadb.layout;
+package com.daomai.stub.layout;
 
 import android.content.Context;
 import android.hardware.display.IDisplayManager;
@@ -8,7 +8,7 @@ import android.view.DisplayInfo;
 import java.io.File;
 
 public class Layout {
-    private static final File LAYOUT_DEFAULT_FILE = new File("/data/local/tmp", "yadb_layout_dump.xml");
+    private static final File LAYOUT_DEFAULT_FILE = new File("/data/local/tmp", "daomai_dump.json");
 
     public static void run(String path) throws Exception {
         DisplayInfo displayInfo = getDisplayInfo();
