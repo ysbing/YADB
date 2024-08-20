@@ -15,8 +15,8 @@ public class Main {
     public static final int USER_ID = 0;
     private static final String ARG_KEY_BOARD = "-keyboard";
     private static final String ARG_TOUCH = "-touch";
-    private static final String ARG_LAYOUT = "-Dump";
-    private static final String ARG_SCREENSHOT = "-Screen";
+    private static final String ARG_LAYOUT = "-layout";
+    private static final String ARG_SCREENSHOT = "-screenshot";
     private static final String ARG_READ_CLIPBOARD = "-readClipboard";
 
     public static void main(String[] args) {
