@@ -4,8 +4,10 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.view.DisplayInfo;
 import android.view.accessibility.AccessibilityNodeInfo;
+import android.graphics.Rect;
 
 import java.util.regex.Pattern;
+import java.util.Random;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,6 +39,11 @@ public class AccessibilityNodeInfoDumper {
             if (root != null) {
                 int width = displayInfo.logicalWidth;
                 int height = displayInfo.logicalHeight;
+                JSONObject nodeJson = new JSONObject();
+                nodeJson.put("width", Integer.toString(width));
+                nodeJson.put("height", Integer.toString(height));
+                nodeJson.put("rotation", Integer.toString(displayInfo.rotation));
+                jsonArray.put(nodeJson);
                 collectNodes(root, jsonArray, 0, width, height);
             }
         } catch (Exception e) {
@@ -44,44 +51,58 @@ public class AccessibilityNodeInfoDumper {
         }
         final long endTime = SystemClock.uptimeMillis();
         Log.i(TAG, "Fetch time: " + (endTime - startTime) + "ms");
-        return jsonArray;
+        return jsonArray.toString().replace("\\/", "/");
     }
 
     private static void collectNodes(AccessibilityNodeInfo node, JSONArray jsonArray, int index, int width, int height) throws JSONException {
         JSONObject nodeJson = new JSONObject();
-        
         if (!nafExcludedClass(node) && !nafCheck(node))
             nodeJson.put("NAF", true);
 
         nodeJson.put("index", index);
         nodeJson.put("class", safeCharSeqToString(node.getClassName()));
         nodeJson.put("package", safeCharSeqToString(node.getPackageName()));
-        nodeJson.put("checkable",Boolean.toString(node.isCheckable()));
-        nodeJson.put("checked", Boolean.toString(node.isChecked()));
-        nodeJson.put("clickable", Boolean.toString(node.isClickable()));
-        nodeJson.put("enabled", Boolean.toString(node.isEnabled()));
-        nodeJson.put("focusable", Boolean.toString(node.isFocusable()));
-        nodeJson.put("focused", Boolean.toString(node.isFocused()));
-        nodeJson.put("scrollable", Boolean.toString(node.isScrollable()));
-        nodeJson.put("long-clickable", Boolean.toString(node.isLongClickable()));
-        nodeJson.put("password", Boolean.toString(node.isPassword()));
-        nodeJson.put("selected", Boolean.toString(node.isSelected()));
+        // nodeJson.put("checkable",Boolean.toString(node.isCheckable()));
+        // nodeJson.put("checked", Boolean.toString(node.isChecked()));
+        // nodeJson.put("clickable", Boolean.toString(node.isClickable()));
+        // nodeJson.put("enabled", Boolean.toString(node.isEnabled()));
+        // nodeJson.put("focusable", Boolean.toString(node.isFocusable()));
+        // nodeJson.put("focused", Boolean.toString(node.isFocused()));
+        // nodeJson.put("scrollable", Boolean.toString(node.isScrollable()));
+        // nodeJson.put("long-clickable", Boolean.toString(node.isLongClickable()));
+        // nodeJson.put("password", Boolean.toString(node.isPassword()));
+        // nodeJson.put("selected", Boolean.toString(node.isSelected()));
         nodeJson.put("resource-id", safeCharSeqToString(node.getViewIdResourceName()));
 
+
         // xử lý tọa độ và chuyển sang click
-        String coordinates = AccessibilityNodeInfoHelper.getVisibleBoundsInScreen(node, width, height).toShortString().replace("][", ",").replace("[", "").replace("]", "");
-        String[] parts = coordinates.split(",");
-        int x1 = Integer.parseInt(parts[0]);
-        int y1 = Integer.parseInt(parts[1]);
-        int x2 = Integer.parseInt(parts[2]);
-        int y2 = Integer.parseInt(parts[3]);
+        Rect nodeRect = new Rect();
+        node.getBoundsInScreen(nodeRect);
+        Rect displayRect = new Rect();
+        displayRect.top = 0;
+        displayRect.left = 0;
+        displayRect.right = width;
+        displayRect.bottom = height;
+        if (!nodeRect.intersect(displayRect)) {
+            nodeRect = new Rect();
+        }
+        int x1 = nodeRect.left;
+        int y1 = nodeRect.top;
+        int x2 = nodeRect.right;
+        int y2 = nodeRect.bottom;
+
+        nodeJson.put("bounds", String.format("%s %s,%s %s", Integer.toString(x1), Integer.toString(y1), Integer.toString(x2), Integer.toString(y2)));
+        
+        // click vào giũa
         int xCenter = (x1 + x2) / 2;
         int yCenter = (y1 + y2) / 2;
-
-        nodeJson.put("bounds", coordinates);
-
         nodeJson.put("click", String.format("%s %s", Integer.toString(xCenter), Integer.toString(yCenter)));
 
+        // click random
+        Random random = new Random();
+        int xrd = random.nextInt(x2 - x1 + 1) + x1;
+        int yrd = random.nextInt(y2 - y1 + 1) + y1;
+        nodeJson.put("click_random", String.format("%s %s", Integer.toString(xrd), Integer.toString(yrd)));
 
         // sửa lỗi text convent text sang dạng khác
         String _text = node.getText() != null ? node.getText().toString()
@@ -93,7 +114,6 @@ public class AccessibilityNodeInfoDumper {
                         : "";
         nodeJson.put("text", _text);
 
-
         String _ContentDescription = node.getContentDescription() != null ? node.getContentDescription().toString()
                         .replace("&", "&amp;")
                         .replace("\"", "&quot;")
@@ -101,9 +121,9 @@ public class AccessibilityNodeInfoDumper {
                         .replace("\r", "&#13;")
                         .replace("\t", "&#9;")
                         : "";
+
         nodeJson.put("content-desc", _ContentDescription);
                         
-
         jsonArray.put(nodeJson);
 
         int count = node.getChildCount();

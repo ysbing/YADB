@@ -13,7 +13,7 @@ public class LayoutShell {
     private final HandlerThread mHandlerThread = new HandlerThread(HANDLER_THREAD_NAME);
     private UiAutomation mUiAutomation = null;
 
-    public static void get(File file, DisplayInfo displayInfo) throws Exception {
+    public static void get(DisplayInfo displayInfo) throws Exception {
         LayoutShell shell = new LayoutShell();
         try {
             shell.connect();
@@ -26,7 +26,7 @@ public class LayoutShell {
                 info = shell.mUiAutomation.getRootInActiveWindow();
             } while (info == null);
             String content = AccessibilityNodeInfoDumper.getWindowJSONHierarchy(info, displayInfo);
-            System.out.println(content.toString().replace("\\/", "/"));
+            System.out.println(content);
         } finally {
             shell.disconnect();
         }

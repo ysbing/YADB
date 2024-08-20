@@ -5,21 +5,13 @@ import android.hardware.display.IDisplayManager;
 import android.view.Display;
 import android.view.DisplayInfo;
 
-import java.io.File;
-
 public class Layout {
-    private static final File LAYOUT_DEFAULT_FILE = new File("/data/local/tmp", "daomai_dump.json");
-
     public static void run(String path) throws Exception {
         DisplayInfo displayInfo = getDisplayInfo();
         if (displayInfo == null) {
             return;
         }
-        if (path == null) {
-            LayoutShell.get(LAYOUT_DEFAULT_FILE, displayInfo);
-        } else {
-            LayoutShell.get(new File(path), displayInfo);
-        }
+        LayoutShell.get(displayInfo);
     }
 
     private static DisplayInfo getDisplayInfo() {
