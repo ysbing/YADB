@@ -27,4 +27,4 @@
 -dontpreverify
 -verbose
 
--keep class com.ysbing.yadb.Main{*;}
+-keep class com.daomai.stub.Main{*;}
