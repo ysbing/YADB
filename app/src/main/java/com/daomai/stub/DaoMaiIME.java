@@ -13,6 +13,10 @@ import android.view.View;
 import android.view.inputmethod.ExtractedTextRequest;
 import android.view.inputmethod.InputConnection;
 
+
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
 public class DaoMaiIME extends InputMethodService {
 	private String IME_MESSAGE = "ADB_INPUT_TEXT";
 	private String IME_CHARS = "ADB_INPUT_CHARS";
@@ -25,7 +29,27 @@ public class DaoMaiIME extends InputMethodService {
 
 	@Override
 	public View onCreateInputView() {
-		View mInputView = getLayoutInflater().inflate(R.layout.view, null);
+		RelativeLayout relativeLayout = new RelativeLayout(this);
+        relativeLayout.setLayoutParams(new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.MATCH_PARENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT));
+        relativeLayout.setBackgroundColor(0xFFFF4F4F); // Màu nền #ff4f4f
+
+        // Tạo đối tượng TextView
+        TextView textView = new TextView(this);
+        textView.setLayoutParams(new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT));
+        textView.setText("Mod By Đào Mai | fb.com/daomai.tool"); // Sử dụng tài nguyên chuỗi
+        textView.setTextColor(0xFFFFFFFF); // Màu chữ #fff
+
+        // Cài đặt căn giữa TextView trong RelativeLayout
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) textView.getLayoutParams();
+        params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+        textView.setLayoutParams(params);
+
+        // Thêm TextView vào RelativeLayout
+        relativeLayout.addView(textView);
 
 		if (mReceiver == null) {
 			IntentFilter filter = new IntentFilter(IME_MESSAGE);
@@ -39,7 +63,7 @@ public class DaoMaiIME extends InputMethodService {
 			registerReceiver(mReceiver, filter);
 		}
 
-		return mInputView;
+		return relativeLayout;
 	}
 
 	public void onDestroy() {

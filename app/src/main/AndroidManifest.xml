@@ -3,15 +3,21 @@
     android:versionCode="1"
     android:versionName="1.0" >
 
+    <!-- Các quyền cần thiết -->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
+
     <application
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
-        
-        <!-- Declares the input method service -->
-        <service android:name="DaoMaiIME"
-            android:label="@string/keyboard_name"
+        android:icon="@mipmap/ic_launcher"
+        android:label="DaoMaiAHiHi">
+
+        <service android:name=".DaoMaiIME"
+            android:label="DaoMai Keyboard"
             android:exported="false"
             android:permission="android.permission.BIND_INPUT_METHOD">
             <intent-filter>
@@ -19,5 +25,18 @@
             </intent-filter>
             <meta-data android:name="android.view.im" android:resource="@xml/methods" />
         </service>    
+
+        <!-- Khai báo Activity để xử lý kết nối Wi-Fi -->
+        <activity android:name=".DMWifi"
+            android:exported="true"
+            android:label="DaoMai Connect Wifi Tool">
+        </activity>
+
+        <activity android:name=".DMFlash"
+            android:exported="true"
+            android:label="DaoMai Test Flash">
+
+        </activity>
+
     </application>
 </manifest>

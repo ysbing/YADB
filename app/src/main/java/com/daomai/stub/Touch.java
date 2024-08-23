@@ -7,7 +7,7 @@ import android.view.MotionEvent;
 
 
 public class Touch {
-    public static void run(float x, float y, long pressedTime, int repeatCount, long pressedTime2) throws InterruptedException {
+    public static void run(float x, float y, long pressedTime, int repeatCount) throws InterruptedException {
         long downTime = SystemClock.uptimeMillis();
         MotionEvent.PointerProperties[] properties = new MotionEvent.PointerProperties[1];
         properties[0] = new MotionEvent.PointerProperties();
@@ -34,9 +34,7 @@ public class Touch {
             DMClipboard.injectEvent(clickEvent2);
 
             if (i < repeatCount - 1) {
-                if (pressedTime2 >= 0L) {
-                    Thread.sleep(pressedTime2);
-                } 
+                Thread.sleep(100);
                 
             }
         }

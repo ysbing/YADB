@@ -3,9 +3,6 @@ package android.view;
 import android.graphics.Rect;
 import android.os.IBinder;
 
-import com.ysbing.yrouter.api.YRouterSystem;
-
-@YRouterSystem
 public final class SurfaceControl {
     public static void openTransaction() {
     }
