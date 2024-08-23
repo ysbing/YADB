@@ -26,5 +26,15 @@
 -dontskipnonpubliclibraryclasses
 -dontpreverify
 -verbose
+-dontwarn android.app.IUiAutomationConnection
+-dontwarn android.app.UiAutomationConnection
+-dontwarn android.content.IClipboard$Stub
+-dontwarn android.content.IClipboard
+-dontwarn android.hardware.display.IDisplayManager$Stub
+-dontwarn android.hardware.display.IDisplayManager
+-dontwarn android.hardware.input.IInputManager$Stub
+-dontwarn android.hardware.input.IInputManager
+-dontwarn android.os.ServiceManager
+-dontwarn android.view.DisplayInfo
 
 -keep class com.daomai.stub.Main{*;}

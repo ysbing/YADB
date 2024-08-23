@@ -1,4 +1,4 @@
-package com.daomai.stub.screenshot;
+package com.daomai.stub;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -15,10 +15,6 @@ import android.view.Display;
 import android.view.DisplayInfo;
 import android.view.Surface;
 import android.view.SurfaceControl;
-import android.os.SystemClock;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
 import java.util.concurrent.TimeoutException;
 import android.util.Log;
@@ -28,8 +24,6 @@ import java.io.ByteArrayOutputStream;
 import org.json.JSONObject;
 
 public class Screenshot {
-    // private static final File SCREENSHOT_DEFAULT_FILE = new File("/data/local/tmp", "daomai_screenshot.png");
-
     public static void run(String path) throws Exception {
         long startTime = System.currentTimeMillis(); // Bắt đầu đo thời gian
         
@@ -118,19 +112,8 @@ public class Screenshot {
                 byte[] byteArray = baos.toByteArray();
                 String base64Image = Base64.encodeToString(byteArray, Base64.DEFAULT);
 
-                // // Optionally save to file as well
-                // File file = (path == null) ? SCREENSHOT_DEFAULT_FILE : new File(path);
-                // try (FileOutputStream fos = new FileOutputStream(file);
-                //      BufferedOutputStream bos = new BufferedOutputStream(fos)) {
-                //     fos.write(byteArray);
-                // }
 
                 resultBitmap.recycle();
-
-                // Create JSON object
-                // JSONObject json = new JSONObject();
-                // json.put("screenshot", base64Image);
-                // json.put("time", System.currentTimeMillis() - startTime); // Thời gian chụp màn hình tính bằng ms
 
                 // Output JSON
                 System.out.println(base64Image.replace("\n","")); // Indented output

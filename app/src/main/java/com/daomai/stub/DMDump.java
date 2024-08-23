@@ -1,26 +1,87 @@
-package com.daomai.stub.layout;
+package com.daomai.stub;
 
+import android.content.Context;
+import android.hardware.display.IDisplayManager;
+import android.view.Display;
+import android.view.DisplayInfo;
+import android.app.UiAutomation;
+import android.app.UiAutomationConnection;
+import android.os.HandlerThread;
+import android.view.accessibility.AccessibilityNodeInfo;
+import java.util.concurrent.TimeoutException;
 import android.os.SystemClock;
 import android.util.Log;
-import android.view.DisplayInfo;
-import android.view.accessibility.AccessibilityNodeInfo;
 import android.graphics.Rect;
-
 import java.util.regex.Pattern;
 import java.util.Random;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-/**
- * The AccessibilityNodeInfoDumper in Android Open Source Project contains a lot of bugs which will
- * stay in old android versions forever. By coping the code of the latest version it is ensured that
- * all patches become available on old android versions. <p/> down ported bugs are e.g. { @link
- * https://code.google.com/p/android/issues/detail?id=62906 } { @link
- * https://code.google.com/p/android/issues/detail?id=58733 }
- */
-public class AccessibilityNodeInfoDumper {
+
+public class DMDump {
+    public static void run(String full) throws Exception {
+        DisplayInfo displayInfo = getDisplayInfo();
+        if (displayInfo == null) {
+            return;
+        }
+        LayoutShell.get(displayInfo, full);
+    }
+
+    private static DisplayInfo getDisplayInfo() {
+        IDisplayManager clipboard = IDisplayManager.Stub.asInterface(android.os.ServiceManager.getService(Context.DISPLAY_SERVICE));
+        if (clipboard == null) {
+            return null;
+        }
+        return clipboard.getDisplayInfo(Display.DEFAULT_DISPLAY);
+    }
+}
+
+
+class LayoutShell {
+    private static final String HANDLER_THREAD_NAME = "LayoutShellThread";
+    private final HandlerThread mHandlerThread = new HandlerThread(HANDLER_THREAD_NAME);
+    private UiAutomation mUiAutomation = null;
+
+    public static void get(DisplayInfo displayInfo, String full) throws Exception {
+        LayoutShell shell = new LayoutShell();
+        try {
+            shell.connect();
+            AccessibilityNodeInfo info;
+            long startTime = System.currentTimeMillis();
+            do {
+                if (System.currentTimeMillis() - startTime >= 3000) {
+                    throw new TimeoutException();
+                }
+                info = shell.mUiAutomation.getRootInActiveWindow();
+            } while (info == null);
+            String content = AccessibilityNodeInfoDumper.getWindowJSONHierarchy(info, displayInfo, full);
+            System.out.println(content);
+        } finally {
+            shell.disconnect();
+        }
+    }
+
+    public void connect() {
+        if (mHandlerThread.isAlive()) {
+            throw new IllegalStateException("Already connected!");
+        }
+        mHandlerThread.start();
+        mUiAutomation = new UiAutomation(mHandlerThread.getLooper(), new UiAutomationConnection());
+        mUiAutomation.connect();
+    }
+
+    public void disconnect() {
+        if (!mHandlerThread.isAlive()) {
+            throw new IllegalStateException("Already disconnected!");
+        }
+        mUiAutomation.disconnect();
+        mHandlerThread.quit();
+    }
+}
+
+
+class AccessibilityNodeInfoDumper {
 
     private static final String TAG = "AccessibilityNodeDumper";
 
@@ -32,7 +93,7 @@ public class AccessibilityNodeInfoDumper {
     };
     private static final Pattern XML10Pattern = Pattern.compile("[^" + "\t\r\n" + " -\uD7FF" + "\uE000-\uFFFD" + "\ud800\udc00-\udbff\udfff" + "]");
 
-    public static String getWindowJSONHierarchy(AccessibilityNodeInfo root, DisplayInfo displayInfo) {
+    public static String getWindowJSONHierarchy(AccessibilityNodeInfo root, DisplayInfo displayInfo, String full) {
         final long startTime = SystemClock.uptimeMillis();
         JSONArray jsonArray = new JSONArray();
         try {
@@ -44,7 +105,7 @@ public class AccessibilityNodeInfoDumper {
                 nodeJson.put("height", Integer.toString(height));
                 nodeJson.put("rotation", Integer.toString(displayInfo.rotation));
                 jsonArray.put(nodeJson);
-                collectNodes(root, jsonArray, 0, width, height);
+                collectNodes(root, jsonArray, 0, width, height, full);
             }
         } catch (Exception e) {
             Log.e(TAG, "failed to dump window to JSON", e);
@@ -54,7 +115,7 @@ public class AccessibilityNodeInfoDumper {
         return jsonArray.toString().replace("\\/", "/");
     }
 
-    private static void collectNodes(AccessibilityNodeInfo node, JSONArray jsonArray, int index, int width, int height) throws JSONException {
+    private static void collectNodes(AccessibilityNodeInfo node, JSONArray jsonArray, int index, int width, int height, String full) throws JSONException {
         JSONObject nodeJson = new JSONObject();
         if (!nafExcludedClass(node) && !nafCheck(node))
             nodeJson.put("NAF", true);
@@ -62,16 +123,18 @@ public class AccessibilityNodeInfoDumper {
         nodeJson.put("index", index);
         nodeJson.put("class", safeCharSeqToString(node.getClassName()));
         nodeJson.put("package", safeCharSeqToString(node.getPackageName()));
-        // nodeJson.put("checkable",Boolean.toString(node.isCheckable()));
-        // nodeJson.put("checked", Boolean.toString(node.isChecked()));
-        // nodeJson.put("clickable", Boolean.toString(node.isClickable()));
-        // nodeJson.put("enabled", Boolean.toString(node.isEnabled()));
-        // nodeJson.put("focusable", Boolean.toString(node.isFocusable()));
-        // nodeJson.put("focused", Boolean.toString(node.isFocused()));
-        // nodeJson.put("scrollable", Boolean.toString(node.isScrollable()));
-        // nodeJson.put("long-clickable", Boolean.toString(node.isLongClickable()));
-        // nodeJson.put("password", Boolean.toString(node.isPassword()));
-        // nodeJson.put("selected", Boolean.toString(node.isSelected()));
+        if (full != null) {
+            nodeJson.put("checkable",Boolean.toString(node.isCheckable()));
+            nodeJson.put("checked", Boolean.toString(node.isChecked()));
+            nodeJson.put("clickable", Boolean.toString(node.isClickable()));
+            nodeJson.put("enabled", Boolean.toString(node.isEnabled()));
+            nodeJson.put("focusable", Boolean.toString(node.isFocusable()));
+            nodeJson.put("focused", Boolean.toString(node.isFocused()));
+            nodeJson.put("scrollable", Boolean.toString(node.isScrollable()));
+            nodeJson.put("long-clickable", Boolean.toString(node.isLongClickable()));
+            nodeJson.put("password", Boolean.toString(node.isPassword()));
+            nodeJson.put("selected", Boolean.toString(node.isSelected()));
+        }
         nodeJson.put("resource-id", safeCharSeqToString(node.getViewIdResourceName()));
 
 
@@ -131,7 +194,7 @@ public class AccessibilityNodeInfoDumper {
             AccessibilityNodeInfo child = node.getChild(i);
             if (child != null) {
                 if (child.isVisibleToUser()) {
-                    collectNodes(child, jsonArray, i, width, height);
+                    collectNodes(child, jsonArray, i, width, height, full);
                     child.recycle();
                 } else {
                     Log.i(TAG, String.format("Skipping invisible child: %s", child.toString()));

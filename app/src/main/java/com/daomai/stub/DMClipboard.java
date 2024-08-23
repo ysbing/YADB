@@ -1,7 +1,10 @@
-package com.daomai.stub.input;
+package com.daomai.stub;
+import com.daomai.stub.Main;
 
-import android.content.Context;
+import android.content.ClipData;
 import android.content.IClipboard;
+import android.os.Build;
+import android.content.Context;
 import android.hardware.input.IInputManager;
 import android.os.SystemClock;
 import android.view.InputDevice;
@@ -9,7 +12,7 @@ import android.view.InputEvent;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 
-public class Keyboard {
+public class DMClipboard {
     private static final String FLAG_ENTER = "\\n";
     private static final String FLAG_CLEAR = "~CLEAR~";
 
@@ -79,5 +82,71 @@ public class Keyboard {
     public static void readClipboard() {
         String clipboard = getClipboardText();
         System.out.println(clipboard);
+    }
+}
+
+class ClipboardManager {
+    private final IClipboard manager;
+
+    public ClipboardManager(IClipboard manager) {
+        this.manager = manager;
+    }
+
+    private static ClipData getPrimaryClip(IClipboard manager) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            return manager.getPrimaryClip(Main.PACKAGE_NAME);
+        } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            return manager.getPrimaryClip(Main.PACKAGE_NAME, Main.USER_ID);
+        } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            try {
+                return manager.getPrimaryClip(Main.PACKAGE_NAME, null, Main.USER_ID);
+            } catch (NoSuchMethodError e) {
+                return manager.getPrimaryClip(Main.PACKAGE_NAME, Main.USER_ID);
+            }
+        } else {
+            try {
+                return manager.getPrimaryClip(Main.PACKAGE_NAME, null, Main.USER_ID, 0);
+            } catch (NoSuchMethodError e) {
+                return manager.getPrimaryClip(Main.PACKAGE_NAME, null, Main.USER_ID, 0, null);
+            }
+        }
+    }
+
+    private static void setPrimaryClip(IClipboard manager, ClipData clipData) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            manager.setPrimaryClip(clipData, Main.PACKAGE_NAME);
+        } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            manager.setPrimaryClip(clipData, Main.PACKAGE_NAME, Main.USER_ID);
+        } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            try {
+                manager.setPrimaryClip(clipData, Main.PACKAGE_NAME, null, Main.USER_ID);
+            } catch (NoSuchMethodError e) {
+                manager.setPrimaryClip(clipData, Main.PACKAGE_NAME, Main.USER_ID);
+            }
+        } else {
+            manager.setPrimaryClip(clipData, Main.PACKAGE_NAME, null, Main.USER_ID, 0);
+        }
+    }
+
+    public CharSequence getText() {
+        try {
+            ClipData clipData = getPrimaryClip(manager);
+            if (clipData == null || clipData.getItemCount() == 0) {
+                return null;
+            }
+            return clipData.getItemAt(0).getText();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public boolean setText(CharSequence text) {
+        try {
+            ClipData clipData = ClipData.newPlainText(null, text);
+            setPrimaryClip(manager, clipData);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
