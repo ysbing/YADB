@@ -150,7 +150,7 @@ public class AccessibilityNodeInfoDumper {
         for (int x = 0; x < childCount; x++) {
             AccessibilityNodeInfo childNode = node.getChild(x);
             if (childNode == null) {
-                Log.i(TAG, String.format("Null child %d/%d, parent: %s", x, childCount, node.toString()));
+                Log.i(TAG, String.format("Null child %d/%d, parent: %s", x, childCount, node));
                 continue;
             }
             if (!safeCharSeqToString(childNode.getContentDescription()).isEmpty() || !safeCharSeqToString(childNode.getText()).isEmpty())
@@ -163,8 +163,34 @@ public class AccessibilityNodeInfoDumper {
     private static String safeCharSeqToString(CharSequence cs) {
         if (cs == null) return "";
         else {
-            return stripInvalidXMLChars(cs);
+            return stripInvalidXMLChars(escapeXml(cs.toString()));
         }
+    }
+
+    private static String escapeXml(String input) {
+        StringBuilder escaped = new StringBuilder();
+        for (char c : input.toCharArray()) {
+            switch (c) {
+                case '"':
+                    escaped.append("&quot;");
+                    break;
+                case '\'':
+                    escaped.append("&apos;");
+                    break;
+                case '<':
+                    escaped.append("&lt;");
+                    break;
+                case '>':
+                    escaped.append("&gt;");
+                    break;
+                case '&':
+                    escaped.append("&amp;");
+                    break;
+                default:
+                    escaped.append(c);
+            }
+        }
+        return escaped.toString();
     }
 
     // Original Google code here broke UTF characters
