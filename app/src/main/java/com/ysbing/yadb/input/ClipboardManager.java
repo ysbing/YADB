@@ -28,7 +28,11 @@ public class ClipboardManager {
             try {
                 return manager.getPrimaryClip(Main.PACKAGE_NAME, null, Main.USER_ID, 0);
             } catch (NoSuchMethodError e) {
-                return manager.getPrimaryClip(Main.PACKAGE_NAME, null, Main.USER_ID, 0, null);
+                try {
+                    return manager.getPrimaryClip(Main.PACKAGE_NAME, null, Main.USER_ID, 0, null);
+                } catch (NoSuchMethodError error) {
+                    return manager.getPrimaryClip(Main.PACKAGE_NAME, null, null, null, Main.USER_ID, 0, false);
+                }
             }
         }
     }
@@ -45,7 +49,11 @@ public class ClipboardManager {
                 manager.setPrimaryClip(clipData, Main.PACKAGE_NAME, Main.USER_ID);
             }
         } else {
-            manager.setPrimaryClip(clipData, Main.PACKAGE_NAME, null, Main.USER_ID, 0);
+            try {
+                manager.setPrimaryClip(clipData, Main.PACKAGE_NAME, null, Main.USER_ID, 0);
+            } catch (NoSuchMethodError e) {
+                manager.setPrimaryClip(clipData, Main.PACKAGE_NAME, null, Main.USER_ID, 0, false);
+            }
         }
     }
 
