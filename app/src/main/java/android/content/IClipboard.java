@@ -22,6 +22,9 @@ public interface IClipboard {
     @TargetApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     ClipData getPrimaryClip(String pkg, String attributionTag, int userId, int deviceId, String targetPackage);
 
+    @TargetApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    ClipData getPrimaryClip(String pkg, String attributionTag, String var1, String var2 ,int userId, int deviceId, boolean isUserOperation);
+
     void setPrimaryClip(ClipData clip, String callingPackage);
 
     @TargetApi(Build.VERSION_CODES.Q)
@@ -34,6 +37,9 @@ public interface IClipboard {
     void setPrimaryClip(ClipData clip, String callingPackage, String attributionTag, int userId,
                         int deviceId);
 
+    @TargetApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    void setPrimaryClip(ClipData clip, String callingPackage, String attributionTag, int userId,
+                        int deviceId, boolean isUserOperation);
     @YRouterSystem
     class Stub {
         public static IClipboard asInterface(IBinder obj) {
