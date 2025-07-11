@@ -7,6 +7,7 @@ import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.hardware.display.DisplayManager;
 import android.hardware.display.IDisplayManager;
+import android.hardware.display.VirtualDisplay;
 import android.media.Image;
 import android.media.ImageReader;
 import android.os.Build;
@@ -30,9 +31,6 @@ public class Screenshot {
         if (displayInfo == null) {
             return;
         }
-        boolean secure = Build.VERSION.SDK_INT < Build.VERSION_CODES.R
-                || (Build.VERSION.SDK_INT == Build.VERSION_CODES.R && !"S".equals(Build.VERSION.CODENAME));
-        IBinder iBinder = SurfaceControl.createDisplay("yadb", secure);
         Rect rect = new Rect(0, 0, displayInfo.logicalWidth, displayInfo.logicalHeight);
         int imageWidth, imageHeight;
         int rotation = displayInfo.rotation;
@@ -46,17 +44,22 @@ public class Screenshot {
         }
         ImageReader imageReader = ImageReader.newInstance(imageWidth, imageHeight, PixelFormat.RGBA_8888, 1);
         Surface surface = imageReader.getSurface();
+        IBinder display = null;
+        VirtualDisplay virtualDisplay = null;
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            boolean secure = Build.VERSION.SDK_INT < Build.VERSION_CODES.R
+                    || (Build.VERSION.SDK_INT == Build.VERSION_CODES.R && !"S".equals(Build.VERSION.CODENAME));
+            display = SurfaceControl.createDisplay("yadb", secure);
             SurfaceControl.openTransaction();
             try {
-                SurfaceControl.setDisplaySurface(iBinder, surface);
-                SurfaceControl.setDisplayProjection(iBinder, displayInfo.rotation, rect, rect);
-                SurfaceControl.setDisplayLayerStack(iBinder, displayInfo.layerStack);
+                SurfaceControl.setDisplaySurface(display, surface);
+                SurfaceControl.setDisplayProjection(display, displayInfo.rotation, rect, rect);
+                SurfaceControl.setDisplayLayerStack(display, displayInfo.layerStack);
             } finally {
                 SurfaceControl.closeTransaction();
             }
         } else {
-            DisplayManager.createVirtualDisplay("yadb", imageWidth, imageHeight, Display.DEFAULT_DISPLAY, surface);
+            virtualDisplay = DisplayManager.createVirtualDisplay("yadb", imageWidth, imageHeight, Display.DEFAULT_DISPLAY, surface);
         }
         Image image;
         long startTime = System.currentTimeMillis();
@@ -92,7 +95,12 @@ public class Screenshot {
         Bitmap bitmap = Bitmap.createBitmap(width + rowPadding / pixelStride, height, Bitmap.Config.ARGB_8888);
         bitmap.copyPixelsFromBuffer(buffer);
         image.close();
-        SurfaceControl.destroyDisplay(iBinder);
+        if (display != null) {
+            SurfaceControl.destroyDisplay(display);
+        }
+        if (virtualDisplay != null) {
+            virtualDisplay.release();
+        }
         surface.release();
         Bitmap resultBitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true);
         bitmap.recycle();
