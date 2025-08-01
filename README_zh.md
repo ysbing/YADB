@@ -1,49 +1,79 @@
-# YADB
+# YADB - ADB 功能增强工具
 
-**YADB** 是基于原生 ADB (Android Debug Bridge) 进行功能扩展的工具，提供了一些原生 ADB
-不支持的实用功能。这些功能包括中文输入、截屏、布局抓取和长按屏幕操作。
+**YADB** 是一个基于原生 ADB (Android Debug Bridge) 进行扩展的实用工具，弥补了 ADB 在输入法、截屏、界面抓取等方面的不足，提供更加高效、精准的操作能力。
 
-## 功能介绍
+---
+
+## 功能简介
 
 ### 中文输入
 
-通过 YADB，您可以轻松输入中文，解决了使用 `adb shell input text` 输入中文时出现的乱码问题。
+解决 `adb shell input text` 无法输入中文的问题，支持任意文本输入。
 
 ```bash
-adb push yadb /data/local/tmp & adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -keyboard 你好，世界
+adb push yadb /data/local/tmp
+adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -keyboard 你好，世界
 ```
 
-### 读取粘贴板
+---
+
+### 读取剪贴板
+
+直接读取设备当前剪贴板内容。
 
 ```bash
-adb push yadb /data/local/tmp & adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -readClipboard
+adb push yadb /data/local/tmp
+adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -readClipboard
 ```
 
-### 截屏
+---
 
-YADB 允许您在不考虑活动 (Activity) 禁止截屏的情况下进行屏幕截图。
+### 写入剪贴板
+
+将指定文本写入设备剪贴板。
 
 ```bash
-adb push yadb /data/local/tmp & adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -screenshot
+adb push yadb /data/local/tmp
+adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -writeClipboard 文本
 ```
 
-### 布局抓取
+---
 
-相比 `adb shell uiautomator dump`，YADB 提供了更为高效的布局抓取功能，尤其在某些界面 uiautomator
-无法获取时。
+### 强制截屏
+
+无需考虑应用禁截屏限制，直接获取当前屏幕截图。
 
 ```bash
-adb push yadb /data/local/tmp & adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -layout
+adb push yadb /data/local/tmp
+adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -screenshot
 ```
 
-### 长按屏幕
+---
 
-该功能可用于自动化测试，实现屏幕的长按操作。
+### 高效布局抓取
+
+替代 `uiautomator dump`，可获取某些特殊页面的完整界面布局。
 
 ```bash
-adb push yadb /data/local/tmp & adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -touch 500 500 2000
+adb push yadb /data/local/tmp
+adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -layout
 ```
+
+---
+
+### 屏幕长按操作
+
+实现自动化测试中需要的长按功能。
+
+```bash
+adb push yadb /data/local/tmp
+adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -touch 500 500 2000
+```
+
+---
 
 ## 许可证
 
-本项目采用 [LGPLv3](https://opensource.org/licenses/LGPL-3.0) 许可证发布。
+本项目遵循 [LGPLv3 许可证](https://opensource.org/licenses/LGPL-3.0)。
+
+---

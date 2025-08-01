@@ -1,49 +1,79 @@
-Language: [English](https://github.com/ysbing/YADB/blob/master/README.md) | [中文简体](https://github.com/ysbing/YADB/blob/master/README_zh.md)
+# YADB - ADB Function Enhancement Tool
 
-# YADB
+**YADB** is a utility tool that extends the capabilities of native ADB (Android Debug Bridge). It addresses limitations in areas like text input, screenshot capturing, and UI layout extraction, providing more efficient and precise operations.
 
-**YADB** is a tool that extends the functionality of the native ADB (Android Debug Bridge), offering practical features not supported by the native ADB. These features include Unicode character input, screenshots, layout extraction, and long-press screen operations.
+---
 
 ## Features
 
-### Unicode character Input
+### Chinese Text Input
 
-With YADB, you can easily input Chinese characters, solving the issue of garbled text when using `adb shell input text` to input Chinese.
+Fixes the issue where `adb shell input text` fails to input Chinese characters. Supports input of any text string.
 
 ```bash
-adb push yadb /data/local/tmp && adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -keyboard 你好，世界
+adb push yadb /data/local/tmp
+adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -keyboard Hello, World
 ```
+
+---
 
 ### Read Clipboard
 
-```bash
-adb push yadb /data/local/tmp && adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -readClipboard
-```
-
-### Screenshot
-
-YADB allows you to take screenshots without considering whether the Activity forbids screenshots.
+Reads the current clipboard content from the device.
 
 ```bash
-adb push yadb /data/local/tmp && adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -screenshot
+adb push yadb /data/local/tmp
+adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -readClipboard
 ```
 
-### Layout Extraction
+---
 
-Compared to `adb shell uiautomator dump`, YADB provides more efficient layout extraction, especially in interfaces where uiautomator cannot fetch the layout.
+### Write Clipboard
+
+Writes the specified text to the device clipboard.
 
 ```bash
-adb push yadb /data/local/tmp && adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -layout
+adb push yadb /data/local/tmp
+adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -writeClipboard TextContent
 ```
 
-### Long Press Screen
+---
 
-This feature can be used for automated testing to achieve long press operations on the screen.
+### Forced Screenshot
+
+Captures the current screen content, bypassing any application-level screenshot restrictions.
 
 ```bash
-adb push yadb /data/local/tmp && adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -touch 500 500 2000
+adb push yadb /data/local/tmp
+adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -screenshot
 ```
+
+---
+
+### Efficient Layout Dump
+
+An alternative to `uiautomator dump`, enabling layout extraction even on pages where uiautomator fails to retrieve UI elements.
+
+```bash
+adb push yadb /data/local/tmp
+adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -layout
+```
+
+---
+
+### Long Press Simulation
+
+Simulates a long-press touch event on the screen, useful for automated testing scenarios.
+
+```bash
+adb push yadb /data/local/tmp
+adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -touch 500 500 2000
+```
+
+---
 
 ## License
 
-This project is released under the [LGPLv3](https://opensource.org/licenses/LGPL-3.0) license.
+This project is licensed under the [LGPLv3 License](https://opensource.org/licenses/LGPL-3.0).
+
+---

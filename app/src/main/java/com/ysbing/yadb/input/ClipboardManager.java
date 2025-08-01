@@ -4,9 +4,9 @@ import android.content.ClipData;
 import android.content.IClipboard;
 import android.os.Build;
 
-import com.ysbing.yadb.Main;
-
 public class ClipboardManager {
+    private static final String PACKAGE_NAME = "com.android.shell";
+    private static final int USER_ID = 0;
     private final IClipboard manager;
 
     public ClipboardManager(IClipboard manager) {
@@ -15,23 +15,23 @@ public class ClipboardManager {
 
     private static ClipData getPrimaryClip(IClipboard manager) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            return manager.getPrimaryClip(Main.PACKAGE_NAME);
+            return manager.getPrimaryClip(PACKAGE_NAME);
         } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-            return manager.getPrimaryClip(Main.PACKAGE_NAME, Main.USER_ID);
+            return manager.getPrimaryClip(PACKAGE_NAME, USER_ID);
         } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             try {
-                return manager.getPrimaryClip(Main.PACKAGE_NAME, null, Main.USER_ID);
+                return manager.getPrimaryClip(PACKAGE_NAME, null, USER_ID);
             } catch (NoSuchMethodError e) {
-                return manager.getPrimaryClip(Main.PACKAGE_NAME, Main.USER_ID);
+                return manager.getPrimaryClip(PACKAGE_NAME, USER_ID);
             }
         } else {
             try {
-                return manager.getPrimaryClip(Main.PACKAGE_NAME, null, Main.USER_ID, 0);
+                return manager.getPrimaryClip(PACKAGE_NAME, null, USER_ID, 0);
             } catch (NoSuchMethodError e) {
                 try {
-                    return manager.getPrimaryClip(Main.PACKAGE_NAME, null, Main.USER_ID, 0, null);
+                    return manager.getPrimaryClip(PACKAGE_NAME, null, USER_ID, 0, null);
                 } catch (NoSuchMethodError error) {
-                    return manager.getPrimaryClip(Main.PACKAGE_NAME, null, null, null, Main.USER_ID, 0, false);
+                    return manager.getPrimaryClip(PACKAGE_NAME, null, null, null, USER_ID, 0, false);
                 }
             }
         }
@@ -39,20 +39,20 @@ public class ClipboardManager {
 
     private static void setPrimaryClip(IClipboard manager, ClipData clipData) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            manager.setPrimaryClip(clipData, Main.PACKAGE_NAME);
+            manager.setPrimaryClip(clipData, PACKAGE_NAME);
         } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-            manager.setPrimaryClip(clipData, Main.PACKAGE_NAME, Main.USER_ID);
+            manager.setPrimaryClip(clipData, PACKAGE_NAME, USER_ID);
         } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             try {
-                manager.setPrimaryClip(clipData, Main.PACKAGE_NAME, null, Main.USER_ID);
+                manager.setPrimaryClip(clipData, PACKAGE_NAME, null, USER_ID);
             } catch (NoSuchMethodError e) {
-                manager.setPrimaryClip(clipData, Main.PACKAGE_NAME, Main.USER_ID);
+                manager.setPrimaryClip(clipData, PACKAGE_NAME, USER_ID);
             }
         } else {
             try {
-                manager.setPrimaryClip(clipData, Main.PACKAGE_NAME, null, Main.USER_ID, 0);
+                manager.setPrimaryClip(clipData, PACKAGE_NAME, null, USER_ID, 0);
             } catch (NoSuchMethodError e) {
-                manager.setPrimaryClip(clipData, Main.PACKAGE_NAME, null, Main.USER_ID, 0, false);
+                manager.setPrimaryClip(clipData, PACKAGE_NAME, null, USER_ID, 0, false);
             }
         }
     }
