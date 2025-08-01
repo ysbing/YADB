@@ -1,3 +1,5 @@
+Language: [English](https://github.com/ysbing/YADB/blob/master/README.md) | [中文简体](https://github.com/ysbing/YADB/blob/master/README_zh.md)
+
 # YADB - ADB Function Enhancement Tool
 
 **YADB** is a utility tool that extends the capabilities of native ADB (Android Debug Bridge). It addresses limitations in areas like text input, screenshot capturing, and UI layout extraction, providing more efficient and precise operations.
