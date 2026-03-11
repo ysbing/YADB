@@ -11,6 +11,7 @@ public class Swipe {
 
         injectMotionEvent(InputDevice.SOURCE_TOUCHSCREEN, MotionEvent.ACTION_DOWN, downTime, eventTime, x1, y1);
 
+        // 先沿滑动方向移动一小段距离(5%)，使系统脱离长按判定区域，避免被识别为长按手势
         float escapeRatio = 0.05f;
         float escapeX = lerp(x1, x2, escapeRatio);
         float escapeY = lerp(y1, y2, escapeRatio);

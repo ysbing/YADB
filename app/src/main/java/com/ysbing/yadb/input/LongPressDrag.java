@@ -14,8 +14,8 @@ public class LongPressDrag {
         if (pressDuration > 0) {
             try {
                 Thread.sleep(pressDuration);
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
         }
 
@@ -32,6 +32,7 @@ public class LongPressDrag {
             try {
                 Thread.sleep(dragDuration / steps);
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
             eventTime = SystemClock.uptimeMillis();
         }

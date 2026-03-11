@@ -80,7 +80,9 @@ Useful for scenarios where you need to long-press an element to select it, and t
 
 ```bash
 # Args: startX startY endX endY pressDuration(ms) dragDuration(ms)
-adb push yadb /data/local/tmp && adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -longPressDrag 500 500 500 1000 2000 1000
+adb push yadb /data/local/tmp 
+adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -longPressDrag 500 500 500 1000 2000 1000
+
 ```
 
 ### Inertia-free Swipe
@@ -89,7 +91,8 @@ An alternative to native `input swipe`. It uses decelerate interpolation to elim
 
 ```bash
 # Args: startX startY endX endY duration(ms)
-adb push yadb /data/local/tmp && adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -swipe 100 1000 100 500 1000
+adb push yadb /data/local/tmp 
+adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -swipe 100 1000 100 500 1000
 ```
 
 ### Two-finger Pinch
