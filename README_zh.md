@@ -72,6 +72,39 @@ adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com
 
 ---
 
+### 长按拖拽
+
+可用于需要先长按选中元素，然后再拖拽到新位置的场景。
+
+```bash
+# 参数: 起点X 起点Y 终点X 终点Y 长按时长(ms) 拖拽时长(ms)
+adb push yadb /data/local/tmp & adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -longPressDrag 500 500 500 1000 2000 1000
+```
+
+### 无惯性滑动
+
+替代原生 `input swipe`，采用减速插值，消除列表滑动的惯性，实现指哪停哪。
+
+```bash
+# 参数: 起点X 起点Y 终点X 终点Y 耗时(ms)
+adb push yadb /data/local/tmp & adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -swipe 100 1000 100 500 1000
+```
+
+### 双指缩放 (Pinch)
+
+模拟双指捏合（缩小）或张开（放大）操作。
+
+```bash
+# 参数: 中心点X 中心点Y 起始间距(px) 结束间距(px) 耗时(ms)
+# 缩小 (Pinch In): 间距由 800px 缩小至 200px
+adb push yadb /data/local/tmp & adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -pinch 540 960 800 200 500
+
+# 放大 (Pinch Out): 间距由 200px 扩大至 800px
+adb push yadb /data/local/tmp & adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -pinch 540 960 200 800 500
+```
+
+## 许可证
+
 ## 许可证
 
 本项目遵循 [LGPLv3 许可证](https://opensource.org/licenses/LGPL-3.0)。

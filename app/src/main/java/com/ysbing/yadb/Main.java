@@ -3,6 +3,9 @@ package com.ysbing.yadb;
 import android.os.Looper;
 
 import com.ysbing.yadb.input.Keyboard;
+import com.ysbing.yadb.input.LongPressDrag;
+import com.ysbing.yadb.input.Pinch;
+import com.ysbing.yadb.input.Swipe;
 import com.ysbing.yadb.input.Touch;
 import com.ysbing.yadb.layout.Layout;
 import com.ysbing.yadb.screenshot.Screenshot;
@@ -27,7 +30,35 @@ public class Main {
         COMMANDS.put("-screenshot", args -> Screenshot.run(args.length == 2 ? args[1] : null));
         COMMANDS.put("-readClipboard", args -> Keyboard.readClipboard());
         COMMANDS.put("-writeClipboard", args -> Keyboard.writeClipboard(args[1]));
+        COMMANDS.put("-swipe", args -> {
+            System.out.println("swipe");
+            float x1 = Float.parseFloat(args[1]);
+            float y1 = Float.parseFloat(args[2]);
+            float x2 = Float.parseFloat(args[3]);
+            float y2 = Float.parseFloat(args[4]);
+            long duration = Long.parseLong(args[5]);
+            Swipe.run(x1, y1, x2, y2, duration);
+        });
+        COMMANDS.put("-longPressDrag", args -> {
+            System.out.println("longPressDrag");
+            float x1 = Float.parseFloat(args[1]);
+            float y1 = Float.parseFloat(args[2]);
+            float x2 = Float.parseFloat(args[3]);
+            float y2 = Float.parseFloat(args[4]);
+            long pressDuration = Long.parseLong(args[5]);
+            long dragDuration = Long.parseLong(args[6]);
+            LongPressDrag.run(x1, y1, x2, y2, pressDuration, dragDuration);
+        });
+        COMMANDS.put("-pinch", args -> {
+            float centerX = Float.parseFloat(args[1]);
+            float centerY = Float.parseFloat(args[2]);
+            float startDist = Float.parseFloat(args[3]);
+            float endDist = Float.parseFloat(args[4]);
+            long duration = Long.parseLong(args[5]);
+            Pinch.run(centerX, centerY, startDist, endDist, duration);
+        });
     }
+
 
     public static void main(String[] args) {
         try {

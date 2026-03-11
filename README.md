@@ -74,6 +74,40 @@ adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com
 
 ---
 
+### Long Press and Drag
+
+Useful for scenarios where you need to long-press an element to select it, and then drag it to a new position.
+
+```bash
+# Args: startX startY endX endY pressDuration(ms) dragDuration(ms)
+adb push yadb /data/local/tmp 
+adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -longPressDrag 500 500 500 1000 2000 1000
+
+```
+
+### Inertia-free Swipe
+
+An alternative to native `input swipe`. It uses decelerate interpolation to eliminate list scrolling inertia, stopping exactly where your finger lifts.
+
+```bash
+# Args: startX startY endX endY duration(ms)
+adb push yadb /data/local/tmp 
+adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -swipe 100 1000 100 500 1000
+```
+
+### Two-finger Pinch
+
+Simulate two-finger pinch (zoom out) or spread (zoom in) operations.
+
+```bash
+# Args: centerX centerY startDistance(px) endDistance(px) duration(ms)
+# Zoom Out (Pinch In): Distance from 800px to 200px
+adb push yadb /data/local/tmp && adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -pinch 540 960 800 200 500
+
+# Zoom In (Pinch Out): Distance from 200px to 800px
+adb push yadb /data/local/tmp && adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -pinch 540 960 200 800 500
+```
+
 ## License
 
 This project is licensed under the [LGPLv3 License](https://opensource.org/licenses/LGPL-3.0).
