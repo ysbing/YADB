@@ -3,34 +3,82 @@ package com.ysbing.yadb.input;
 import android.content.Context;
 import android.content.IClipboard;
 import android.hardware.input.IInputManager;
+import android.os.Bundle;
 import android.os.ServiceManager;
 import android.os.SystemClock;
 import android.view.InputDevice;
 import android.view.InputEvent;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
+import android.view.accessibility.AccessibilityNodeInfo;
+
+import com.ysbing.yadb.layout.LayoutShell;
 
 public class Keyboard {
     private static final String FLAG_ENTER = "\\n";
-    private static final String FLAG_CLEAR = "~CLEAR~";
     private static final int META_CTRL = KeyEvent.META_CTRL_ON | KeyEvent.META_CTRL_LEFT_ON;
+    private static final IClipboard clipboard = IClipboard.
+            Stub.asInterface(ServiceManager.getService(Context.CLIPBOARD_SERVICE));
 
-    private static final IClipboard clipboard = IClipboard.Stub.asInterface(ServiceManager.getService(Context.CLIPBOARD_SERVICE));
-    private static final IInputManager inputManager = IInputManager.Stub.asInterface(ServiceManager.getService(Context.INPUT_SERVICE));
+    public static void clear() {
+        if (setTextByAccessibility("", false)) {
+            return;
+        }
+        selectAll();
+        deleteSelection();
+    }
 
-    public static void run(String text) {
-        if (text.contains(FLAG_CLEAR)) {
-            selectAll();
-            deleteSelection();
-        } else {
-            text = text.replace(FLAG_ENTER, "\n");
-            if (setClipboardText(text)) {
-                pasteClipboard();
-                System.out.println("Copy text: true");
-            } else {
-                System.out.println("Copy text: false");
+    public static void text(String text) {
+        text = text.replace(FLAG_ENTER, "\n");
+        if (setTextByAccessibility(text, true)) {
+            return;
+        }
+        if (setClipboardText(text)) {
+            pasteClipboard();
+        }
+    }
+
+    private static boolean setTextByAccessibility(String text, boolean append) {
+        LayoutShell shell = new LayoutShell();
+        try {
+            shell.connect();
+            AccessibilityNodeInfo root = null;
+            long startTime = System.currentTimeMillis();
+            while (root == null && System.currentTimeMillis() - startTime < 5000) {
+                root = shell.getUiAutomation().getRootInActiveWindow();
+                if (root == null) {
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        break;
+                    }
+                }
+            }
+            if (root != null) {
+                AccessibilityNodeInfo focused = root.findFocus(AccessibilityNodeInfo.FOCUS_INPUT);
+                if (focused != null) {
+                    String finalDoc = text;
+                    if (append) {
+                        CharSequence current = focused.getText();
+                        finalDoc = (current != null ? current.toString() : "") + text;
+                    }
+                    Bundle arguments = new Bundle();
+                    arguments.putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, finalDoc);
+                    boolean success = focused.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments);
+                    focused.recycle();
+                    return success;
+                }
+                root.recycle();
+            }
+        } catch (Throwable e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                shell.disconnect();
+            } catch (Throwable e) {
             }
         }
+        return false;
     }
 
     private static void selectAll() {
@@ -38,8 +86,8 @@ public class Keyboard {
     }
 
     private static void deleteSelection() {
-        injectKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL, META_CTRL);
-        injectKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DEL, META_CTRL);
+        injectKeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL, 0);
+        injectKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DEL, 0);
     }
 
     private static void pasteClipboard() {
@@ -52,7 +100,6 @@ public class Keyboard {
         injectKeyEvent(KeyEvent.ACTION_UP, keyCode, META_CTRL);
         injectKeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_CTRL_LEFT, 0);
     }
-
 
     private static void injectKeyEvent(int action, int keyCode, int metaState) {
         long now = SystemClock.uptimeMillis();

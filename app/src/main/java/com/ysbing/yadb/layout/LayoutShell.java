@@ -53,4 +53,8 @@ public class LayoutShell {
         mUiAutomation.disconnect();
         mHandlerThread.quit();
     }
+
+    public UiAutomation getUiAutomation() {
+        return mUiAutomation;
+    }
 }

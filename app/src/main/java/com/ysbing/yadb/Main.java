@@ -19,7 +19,8 @@ public class Main {
     private static final Map<String, Command> COMMANDS = new HashMap<>();
 
     static {
-        COMMANDS.put("-keyboard", args -> Keyboard.run(args[1]));
+        COMMANDS.put("-keyboard", args -> Keyboard.text(args[1]));
+        COMMANDS.put("-keyboardClear", args -> Keyboard.clear());
         COMMANDS.put("-touch", args -> {
             float x = Float.parseFloat(args[1]);
             float y = Float.parseFloat(args[2]);

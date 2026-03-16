@@ -11,4 +11,11 @@ android {
         versionCode 1
         versionName "1.0"
     }
+
+    applicationVariants.all { variant ->
+        variant.javaCompileProvider.configure { task ->
+            def myClassesDir = file("${buildDir}/intermediates/javac/${variant.name}/classes")
+            task.options.bootstrapClasspath = files(myClassesDir) + task.options.bootstrapClasspath
+        }
+    }
 }
