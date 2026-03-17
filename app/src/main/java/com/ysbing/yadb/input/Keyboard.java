@@ -29,7 +29,9 @@ public class Keyboard {
     }
 
     public static void text(String text) {
-        text = text.replace(FLAG_ENTER, "\n");
+        text = text.replace("\\\\n", "\0")
+                .replace(FLAG_ENTER, "\n")
+                .replace("\0", "\\n");
         if (setTextByAccessibility(text, true)) {
             return;
         }
