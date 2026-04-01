@@ -78,6 +78,7 @@ public class Main {
         } catch (Throwable e) {
             System.out.println("MainException: " + getStackTraceAsString(e));
         }
+        System.exit(0);
     }
 
     private static String getStackTraceAsString(Throwable throwable) {
