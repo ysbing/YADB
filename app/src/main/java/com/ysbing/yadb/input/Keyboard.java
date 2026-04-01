@@ -61,6 +61,7 @@ public class Keyboard {
                 AccessibilityNodeInfo focused = root.findFocus(AccessibilityNodeInfo.FOCUS_INPUT);
                 if (focused != null) {
                     String finalDoc = text;
+                    int newCursorPos = -1;
                     if (append) {
                         CharSequence current = focused.getText();
                         // On API 26+, AccessibilityNodeInfo.getText() may return
@@ -71,11 +72,43 @@ public class Keyboard {
                                 && focused.isShowingHintText()) {
                             current = null;
                         }
-                        finalDoc = (current != null ? current.toString() : "") + text;
+                        
+                        String currentStr = current != null ? current.toString() : "";
+                        int start = focused.getTextSelectionStart();
+                        int end = focused.getTextSelectionEnd();
+                        
+                        // 如果无法获取光标位置，默认追加到末尾
+                        if (start < 0 || end < 0) {
+                            start = currentStr.length();
+                            end = currentStr.length();
+                        } else {
+                            // 确保 start <= end
+                            int temp = Math.min(start, end);
+                            end = Math.max(start, end);
+                            start = temp;
+                        }
+                        
+                        // 确保边界合法，防止越界
+                        start = Math.max(0, Math.min(start, currentStr.length()));
+                        end = Math.max(0, Math.min(end, currentStr.length()));
+                        
+                        String prefix = currentStr.substring(0, start);
+                        String suffix = currentStr.substring(end);
+                        finalDoc = prefix + text + suffix;
+                        newCursorPos = prefix.length() + text.length();
                     }
                     Bundle arguments = new Bundle();
                     arguments.putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, finalDoc);
                     boolean success = focused.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments);
+                    
+                    // 设置光标到新插入文本的后面
+                    if (success && append && newCursorPos >= 0) {
+                        Bundle selectionArgs = new Bundle();
+                        selectionArgs.putInt(AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_START_INT, newCursorPos);
+                        selectionArgs.putInt(AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_END_INT, newCursorPos);
+                        focused.performAction(AccessibilityNodeInfo.ACTION_SET_SELECTION, selectionArgs);
+                    }
+                    
                     focused.recycle();
                     return success;
                 }
