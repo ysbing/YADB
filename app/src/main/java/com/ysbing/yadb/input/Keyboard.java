@@ -3,6 +3,7 @@ package com.ysbing.yadb.input;
 import android.content.Context;
 import android.content.IClipboard;
 import android.hardware.input.IInputManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.ServiceManager;
 import android.os.SystemClock;
@@ -62,6 +63,14 @@ public class Keyboard {
                     String finalDoc = text;
                     if (append) {
                         CharSequence current = focused.getText();
+                        // On API 26+, AccessibilityNodeInfo.getText() may return
+                        // hint/placeholder text (e.g. X/Twitter's "有什么新鲜事？").
+                        // Treat hint text as empty to avoid prepending it to input.
+                        if (current != null
+                                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+                                && focused.isShowingHintText()) {
+                            current = null;
+                        }
                         finalDoc = (current != null ? current.toString() : "") + text;
                     }
                     Bundle arguments = new Bundle();
