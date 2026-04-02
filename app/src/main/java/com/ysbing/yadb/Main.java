@@ -19,7 +19,10 @@ public class Main {
     private static final Map<String, Command> COMMANDS = new HashMap<>();
 
     static {
-        COMMANDS.put("-keyboard", args -> Keyboard.text(args[1]));
+        COMMANDS.put("-keyboard", args -> {
+            boolean overwrite = args.length >= 3 && "--overwrite".equals(args[2]);
+            Keyboard.text(args[1], !overwrite);
+        });
         COMMANDS.put("-keyboardClear", args -> Keyboard.clear());
         COMMANDS.put("-touch", args -> {
             float x = Float.parseFloat(args[1]);
