@@ -29,11 +29,11 @@ public class Keyboard {
         deleteSelection();
     }
 
-    public static void text(String text) {
+    public static void text(String text, boolean append) {
         text = text.replace("\\\\n", "\0")
                 .replace(FLAG_ENTER, "\n")
                 .replace("\0", "\\n");
-        if (setTextByAccessibility(text, true)) {
+        if (setTextByAccessibility(text, append)) {
             return;
         }
         if (setClipboardText(text)) {
