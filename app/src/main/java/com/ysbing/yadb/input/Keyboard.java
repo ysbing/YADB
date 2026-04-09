@@ -3,17 +3,12 @@ package com.ysbing.yadb.input;
 import android.content.Context;
 import android.content.IClipboard;
 import android.hardware.input.IInputManager;
-import android.os.Build;
-import android.os.Bundle;
 import android.os.ServiceManager;
 import android.os.SystemClock;
 import android.view.InputDevice;
 import android.view.InputEvent;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
-import android.view.accessibility.AccessibilityNodeInfo;
-
-import com.ysbing.yadb.layout.LayoutShell;
 
 public class Keyboard {
     private static final String FLAG_ENTER = "\\n";
@@ -22,107 +17,16 @@ public class Keyboard {
             Stub.asInterface(ServiceManager.getService(Context.CLIPBOARD_SERVICE));
 
     public static void clear() {
-        if (setTextByAccessibility("", false)) {
-            return;
-        }
         selectAll();
         deleteSelection();
     }
 
     public static void text(String text) {
-        text = text.replace("\\\\n", "\0")
-                .replace(FLAG_ENTER, "\n")
-                .replace("\0", "\\n");
-        if (setTextByAccessibility(text, true)) {
-            return;
-        }
+        text = text.replace(FLAG_ENTER, "\n");
         if (setClipboardText(text)) {
             pasteClipboard();
+            System.out.println("Copy text:true");
         }
-    }
-
-    private static boolean setTextByAccessibility(String text, boolean append) {
-        LayoutShell shell = new LayoutShell();
-        try {
-            shell.connect();
-            AccessibilityNodeInfo root = null;
-            long startTime = System.currentTimeMillis();
-            while (root == null && System.currentTimeMillis() - startTime < 5000) {
-                root = shell.getUiAutomation().getRootInActiveWindow();
-                if (root == null) {
-                    try {
-                        Thread.sleep(200);
-                    } catch (InterruptedException e) {
-                        break;
-                    }
-                }
-            }
-            if (root != null) {
-                AccessibilityNodeInfo focused = root.findFocus(AccessibilityNodeInfo.FOCUS_INPUT);
-                if (focused != null) {
-                    String finalDoc = text;
-                    int newCursorPos = -1;
-                    if (append) {
-                        CharSequence current = focused.getText();
-                        // On API 26+, AccessibilityNodeInfo.getText() may return
-                        // hint/placeholder text (e.g. X/Twitter's "有什么新鲜事？").
-                        // Treat hint text as empty to avoid prepending it to input.
-                        if (current != null
-                                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-                                && focused.isShowingHintText()) {
-                            current = null;
-                        }
-                        
-                        String currentStr = current != null ? current.toString() : "";
-                        int start = focused.getTextSelectionStart();
-                        int end = focused.getTextSelectionEnd();
-                        
-                        // 如果无法获取光标位置，默认追加到末尾
-                        if (start < 0 || end < 0) {
-                            start = currentStr.length();
-                            end = currentStr.length();
-                        } else {
-                            // 确保 start <= end
-                            int temp = Math.min(start, end);
-                            end = Math.max(start, end);
-                            start = temp;
-                        }
-                        
-                        // 确保边界合法，防止越界
-                        start = Math.max(0, Math.min(start, currentStr.length()));
-                        end = Math.max(0, Math.min(end, currentStr.length()));
-                        
-                        String prefix = currentStr.substring(0, start);
-                        String suffix = currentStr.substring(end);
-                        finalDoc = prefix + text + suffix;
-                        newCursorPos = prefix.length() + text.length();
-                    }
-                    Bundle arguments = new Bundle();
-                    arguments.putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, finalDoc);
-                    boolean success = focused.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments);
-                    
-                    // 设置光标到新插入文本的后面
-                    if (success && append && newCursorPos >= 0) {
-                        Bundle selectionArgs = new Bundle();
-                        selectionArgs.putInt(AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_START_INT, newCursorPos);
-                        selectionArgs.putInt(AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_END_INT, newCursorPos);
-                        focused.performAction(AccessibilityNodeInfo.ACTION_SET_SELECTION, selectionArgs);
-                    }
-                    
-                    focused.recycle();
-                    return success;
-                }
-                root.recycle();
-            }
-        } catch (Throwable e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                shell.disconnect();
-            } catch (Throwable e) {
-            }
-        }
-        return false;
     }
 
     private static void selectAll() {
