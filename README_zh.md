@@ -12,7 +12,7 @@
 
 ```bash
 adb push yadb /data/local/tmp
-adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -keyboard 你好，世界
+adb shell "app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -keyboard 你好，世界"
 ```
 
 ---
@@ -23,7 +23,7 @@ adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com
 
 ```bash
 adb push yadb /data/local/tmp
-adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -readClipboard
+adb shell "app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -readClipboard"
 ```
 
 ---
@@ -34,7 +34,7 @@ adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com
 
 ```bash
 adb push yadb /data/local/tmp
-adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -writeClipboard 文本
+adb shell "app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -writeClipboard 文本"
 ```
 
 ---
@@ -45,7 +45,7 @@ adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com
 
 ```bash
 adb push yadb /data/local/tmp
-adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -screenshot
+adb shell "app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -screenshot"
 ```
 
 ---
@@ -56,7 +56,7 @@ adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com
 
 ```bash
 adb push yadb /data/local/tmp
-adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -layout
+adb shell "app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -layout"
 ```
 
 ---
@@ -67,7 +67,7 @@ adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com
 
 ```bash
 adb push yadb /data/local/tmp
-adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -touch 500 500 2000
+adb shell "app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -touch 500 500 2000"
 ```
 
 ---
@@ -78,7 +78,7 @@ adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com
 
 ```bash
 # 参数: 起点X 起点Y 终点X 终点Y 长按时长(ms) 拖拽时长(ms)
-adb push yadb /data/local/tmp & adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -longPressDrag 500 500 500 1000 2000 1000
+adb push yadb /data/local/tmp && adb shell "app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -longPressDrag 500 500 500 1000 2000 1000"
 ```
 
 ### 无惯性滑动
@@ -87,7 +87,7 @@ adb push yadb /data/local/tmp & adb shell app_process -Djava.class.path=/data/lo
 
 ```bash
 # 参数: 起点X 起点Y 终点X 终点Y 耗时(ms)
-adb push yadb /data/local/tmp & adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -swipe 100 1000 100 500 1000
+adb push yadb /data/local/tmp && adb shell "app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -swipe 100 1000 100 500 1000"
 ```
 
 ### 双指缩放 (Pinch)
@@ -97,13 +97,11 @@ adb push yadb /data/local/tmp & adb shell app_process -Djava.class.path=/data/lo
 ```bash
 # 参数: 中心点X 中心点Y 起始间距(px) 结束间距(px) 耗时(ms)
 # 缩小 (Pinch In): 间距由 800px 缩小至 200px
-adb push yadb /data/local/tmp & adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -pinch 540 960 800 200 500
+adb push yadb /data/local/tmp && adb shell "app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -pinch 540 960 800 200 500"
 
 # 放大 (Pinch Out): 间距由 200px 扩大至 800px
-adb push yadb /data/local/tmp & adb shell app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -pinch 540 960 200 800 500
+adb push yadb /data/local/tmp && adb shell "app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -pinch 540 960 200 800 500"
 ```
-
-## 许可证
 
 ## 许可证
 

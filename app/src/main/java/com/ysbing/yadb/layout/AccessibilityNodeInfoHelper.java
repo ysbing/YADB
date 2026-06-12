@@ -7,20 +7,12 @@ class AccessibilityNodeInfoHelper {
     AccessibilityNodeInfoHelper() {
     }
 
-    static Rect getVisibleBoundsInScreen(AccessibilityNodeInfo node, int width, int height) {
+    static Rect getVisibleBoundsInScreen(AccessibilityNodeInfo node ) {
         if (node == null) {
             return null;
         }
         Rect nodeRect = new Rect();
         node.getBoundsInScreen(nodeRect);
-        Rect displayRect = new Rect();
-        displayRect.top = 0;
-        displayRect.left = 0;
-        displayRect.right = width;
-        displayRect.bottom = height;
-        if (nodeRect.intersect(displayRect)) {
-            return nodeRect;
-        }
-        return new Rect();
+        return nodeRect;
     }
 }
