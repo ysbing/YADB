@@ -14,7 +14,7 @@ Fixes the issue where `adb shell input text` fails to input Chinese characters. 
 
 ```bash
 adb push yadb /data/local/tmp
-adb shell "app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -keyboard Hello, World"
+adb shell "app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -keyboard 'Hello, World'"
 ```
 
 ---
