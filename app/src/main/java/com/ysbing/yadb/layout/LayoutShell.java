@@ -2,6 +2,7 @@ package com.ysbing.yadb.layout;
 
 import android.app.UiAutomation;
 import android.app.UiAutomationConnection;
+import android.os.Build;
 import android.os.HandlerThread;
 import android.view.DisplayInfo;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -43,7 +44,14 @@ public class LayoutShell {
         }
         mHandlerThread.start();
         mUiAutomation = new UiAutomation(mHandlerThread.getLooper(), new UiAutomationConnection());
-        mUiAutomation.connect();
+        // The no-arg connect() uses flags 0, which makes AMS suppress (unbind) every
+        // other accessibility service on the device until this process exits.
+        // FLAG_DONT_SUPPRESS_ACCESSIBILITY_SERVICES (API 24+) keeps them running.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            mUiAutomation.connect(UiAutomation.FLAG_DONT_SUPPRESS_ACCESSIBILITY_SERVICES);
+        } else {
+            mUiAutomation.connect();
+        }
     }
 
     public void disconnect() {
