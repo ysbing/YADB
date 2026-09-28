@@ -1,5 +1,6 @@
 package com.ysbing.yadb.layout;
 
+import android.os.Build;
 import android.os.SystemClock;
 import android.util.Log;
 import android.util.Xml;
@@ -83,6 +84,33 @@ public class AccessibilityNodeInfoDumper {
         serializer.attribute("", "selected", Boolean.toString(node.isSelected()));
         serializer.attribute("", "bounds", AccessibilityNodeInfoHelper.getVisibleBoundsInScreen(node).toShortString());
         serializer.attribute("", "resource-id", safeCharSeqToString(node.getViewIdResourceName()));
+
+        // Sliders (SeekBar / ProgressBar) expose their position through
+        // AccessibilityNodeInfo.getRangeInfo(), but the AOSP dumper this file is
+        // derived from does not write it out. The node then carries only the track
+        // bounds, so "which step is it on" is invisible to anyone reading the XML:
+        //
+        //   <node text="" class="android.widget.SeekBar" content-desc="Media volume"
+        //         bounds="[189,658][1038,784]" resource-id="android:id/seekbar"/>
+        //
+        // That makes slider values unreadable for automation built on `-layout`
+        // (volume, brightness, font size, progress bars). The information is already
+        // on the node - it just needs to be serialized. Only nodes that actually have
+        // a RangeInfo gain attributes, and consumers that do not know them ignore
+        // unknown attributes, so this stays a superset of the previous output.
+        AccessibilityNodeInfo.RangeInfo rangeInfo = node.getRangeInfo();
+        if (rangeInfo != null) {
+            serializer.attribute("", "range-min", Float.toString(rangeInfo.getMin()));
+            serializer.attribute("", "range-max", Float.toString(rangeInfo.getMax()));
+            serializer.attribute("", "range-current", Float.toString(rangeInfo.getCurrent()));
+        }
+        // Android 11+ also exposes a human readable form such as "53%".
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            CharSequence stateDescription = node.getStateDescription();
+            if (stateDescription != null && stateDescription.length() > 0) {
+                serializer.attribute("", "state-desc", safeCharSeqToString(stateDescription));
+            }
+        }
 
         int count = node.getChildCount();
         for (int i = 0; i < count; i++) {
