@@ -59,6 +59,8 @@ adb push yadb /data/local/tmp
 adb shell "app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -layout"
 ```
 
+滑块类节点（`SeekBar`、`ProgressBar`）会额外带上档位：`range-min`、`range-max`、`range-current`，Android 11+ 还会带 `state-desc`（如 `53%`）。没有档位的节点输出与之前完全一致。
+
 ---
 
 ### 屏幕长按操作

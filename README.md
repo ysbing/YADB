@@ -61,6 +61,8 @@ adb push yadb /data/local/tmp
 adb shell "app_process -Djava.class.path=/data/local/tmp/yadb /data/local/tmp com.ysbing.yadb.Main -layout"
 ```
 
+Slider-like nodes (`SeekBar`, `ProgressBar`) also carry their position: `range-min`, `range-max` and `range-current`, plus `state-desc` on Android 11+ where the platform exposes a readable form such as `53%`. Nodes without a range are dumped exactly as before.
+
 ---
 
 ### Long Press Simulation
